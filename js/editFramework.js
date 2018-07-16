@@ -249,13 +249,6 @@ saveCompetency = function (addAnother) {
         if (val == null)
             delete thing[$(this).attr(inputChoice)];
         else {
-            if ($(this).attr("plural") != null) {
-                thing[$(this).attr(inputChoice)] = val.split(/, ?/);
-                if (thing[$(this).attr(inputChoice)].length == 1)
-                    thing[$(this).attr(inputChoice)] = thing[$(this).attr(inputChoice)][0];
-                else if (thing[$(this).attr(inputChoice)].length == 0)
-                    delete thing[$(this).attr(inputChoice)];
-            } else
             if ($(this).attr("type") == "datetime-local")
                 thing[$(this).attr(inputChoice)] = new Date(val).toISOString();
             else
@@ -263,19 +256,25 @@ saveCompetency = function (addAnother) {
         }
     });
 
-    $("#detailSlider").find('.sidebarInputGroup').each(function() {
+    $("#detailSlider").find('.sidebarInputGrouping').each(function() {
         var vals = [];
-        var whichInputChoice = $(this).prev().attr(inputChoice);
+        var whichInputChoice = $(this).children().first().children('input,textarea').attr(inputChoice);
 
-        //Get the base input field first
-        var val = getValueOrNull($(this).prev().val());
-        if (val != null)
-            vals.push(val);
-
-        $(this).find('input:visible,textarea:visible').each(function() {
-            var val = getValueOrNull($(this).val());
-            if (val != null)
-                vals.push(val);
+        $(this).find('.sidebarInputRow > input:visible, .sidebarInputRow > textarea:visible').each(function() {
+            var val;
+            if ($(this).prev('select').length > 0) {
+                var selectVal = getValueOrNull($(this).prev('select').val());
+                var stringVal = getValueOrNull($(this).val());
+                if (selectVal != null && stringVal != null) {
+                    val = {};
+                    val[selectVal] = stringVal;
+                    vals.push(val);
+                }
+            } else {
+                val = getValueOrNull($(this).val());
+                if (val != null)
+                    vals.push(val);
+            }
         });
         if (vals.length > 0) {
             thing[whichInputChoice] = vals;
@@ -284,7 +283,7 @@ saveCompetency = function (addAnother) {
         }
     });
 
-    $("#detailSlider").find("select:visible").each(function () {
+    $("#detailSlider").find("select:visible:not(.sidebarInputLanguageSelect)").each(function () {
         var val = $(this).find("option:selected").attr("value");
         if (val === undefined || val == null || val == "")
             delete thing[$(this).attr(inputChoice)];
@@ -294,6 +293,7 @@ saveCompetency = function (addAnother) {
     });
 
     thing["schema:dateModified"] = new Date().toISOString();
+    console.log(thing);
     if (selectedCompetency == null) {
         repo.saveTo(thing, afterSaveSidebar, error);
     } else {
@@ -325,7 +325,7 @@ createFramework = function () {
     framework["schema:dateCreated"] = new Date().toISOString();
     if (EcIdentityManager.ids.length > 0)
         framework.addOwner(EcIdentityManager.ids[0].ppk.toPk());
-    framework.name = "New Framework";
+    framework.name = [{"en-US": "New Framework"}];
     refreshSidebar();
     editSidebar();
     populateFramework();

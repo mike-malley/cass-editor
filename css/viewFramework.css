@@ -155,6 +155,22 @@ h3.sidebarViewList {
     padding-left: 40px;
 }
 
+.sidebarInputRow {
+    display: flex;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.addInputButton {
+    visibility: hidden;
+    margin: 0;
+    margin-left: 0.5rem;
+}
+
+.sidebarInputRow:last-child > button {
+    visibility: visible;
+}
+
 .sidebarPropertyLink {
     display: flex;
     align-items: center;
@@ -274,8 +290,6 @@ hr {
 #detailSlider input,
 #detailSlider textarea,
 #detailSlider .ceasnDataFields select {
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
     width: calc(100% - 1rem);
 }
 
