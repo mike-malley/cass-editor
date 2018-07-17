@@ -113,9 +113,8 @@ populateFramework = function (subsearch) {
     $("#tree").hide().html("");
     me.fetches = 0;
     var frameworkName = framework.getName();
-    frameworkName = EcArray.isArray(frameworkName) ? frameworkName : [frameworkName];
     $("#editFrameworkSection #frameworkAKA").children().remove();
-    $("#editFrameworkSection #frameworkName").text(frameworkName[0][Object.keys(frameworkName[0])[0]]);
+    $("#editFrameworkSection #frameworkName").text(frameworkName[Object.keys(frameworkName)[0]]);
     for (var i = 1; i < frameworkName.length; i++) {
         $("#editFrameworkSection #frameworkAKA").append($('<span>AKA: ' + frameworkName[i] + '</span>'));
     }
@@ -563,67 +562,49 @@ renderSidebar = function (justLists) {
             $(this).prev().css("display", "");
             $(this).css("display", "");
 
-            //Clear additional input fields if the property isn't present
+            //Clear additional input fields
             $(this).find('.sidebarInputRow.inputCopy').each(function() {
-                if (thing[$(this).children('input,textarea').attr(inputChoice)] == null)
-                    $(this).remove();
+                $(this).remove();
             });
 
             var baseField = $(this).children().first().children('input,textarea');
 
-            var val = EcArray.isArray(thing[baseField.attr(inputChoice)]) ? thing[baseField.attr(inputChoice)][0] : thing[baseField.attr(inputChoice)];
-            if (val == null)
-                baseField.val('');
-            else if (typeof val === 'object') {
-                Object.keys(val).forEach(function(key) {
-                    setTimeout(function() {
-                        baseField.prev('select').val(key);
-                        baseField.val(val[key]);
-                    }, 10);
-                });
-            } else {
-                baseField.val(val);
-            }
-
-            if (EcArray.isArray(thing[baseField.attr(inputChoice)])) {
-                //Create the input fields if needed and they aren't there yet
-                if (thing[baseField.attr(inputChoice)].length > 1 && ($(this).find('.sidebarInputRow.inputCopy').length < thing[baseField.attr(inputChoice)].length - 1)) {
-                    for (var i = 1; i < thing[baseField.attr(inputChoice)].length; i++) {
-                        var newElem = $($(this).children().first()[0].cloneNode(true));
-                        var uuid = new UUID(4);
-                        newElem.children('input,textarea').attr('id', uuid.format());
-                        newElem.children('input,textarea').addClass('inputCopy');
-                        newElem.addClass('inputCopy');
-                        newElem.children('input,textarea').val('');
-                        $(this).append(newElem);
-                        //TODO autocomplete
-                        if (newElem.children('button').attr('data-autocomplete-field') === 'true')
-                            setLanguageTagAutocomplete();
-                    }
-                }
-
-                $(this).find('.sidebarInputRow.inputCopy').each(function(i) {
-                    var val = thing[$(this).children('input,textarea').attr(inputChoice)][i+1];
-                    if (val == null) {
-                        $(this).remove();
-                    } else if (typeof val === 'object') {
-                        var temp = $(this);
-                        Object.keys(val).forEach(function(key) {
+            var obj = thing[baseField.attr(inputChoice)];
+            var isFirstValue = true;
+            var elem = $(this);
+            if (obj != null)
+                Object.keys(obj).forEach(function(key) {
+                    var val = EcArray.isArray(obj[key]) ? obj[key] : [obj[key]];
+                    for (var i in val) {
+                        //The basefield
+                        if (isFirstValue) {
+                            isFirstValue = false;
                             setTimeout(function() {
+                                baseField.prev('select').val(key);
+                                baseField.val(val[i]);
+                            }, 10);
+                        } else {
+                            var newElem = $(elem.children().first()[0].cloneNode(true));
+                            var uuid = new UUID(4);
+                            newElem.children('input,textarea').attr('id', uuid.format());
+                            newElem.children('input,textarea').addClass('inputCopy');
+                            newElem.addClass('inputCopy');
+                            setTimeout(function() {
+                                var temp = newElem;
+                                temp.children('input,textarea').val(val[i]);
                                 temp.children('select').val(key);
-                                temp.children('input,textarea').val(val[key]);
-                            }, 10)
-                        });
-                    } else {
-                        $(this).children('input,textarea').val(val);
+                            }, 10);
+                            elem.append(newElem);
+                            if (newElem.children('button').attr('data-autocomplete-field') === 'true')
+                                setLanguageTagAutocomplete();
+                        }
                     }
                 });
-            } else {
-                //There is only one value, remove all additional input fields.
-                $(this).find('.sidebarInputRow.inputCopy').each(function() {
-                    $(this).remove();
-                });
-            }
+            else
+                setTimeout(function() {
+                    baseField.prev('select').val('en-US');
+                    baseField.val('');
+                }, 10);
         });
 
     if (justLists != true)

@@ -257,27 +257,27 @@ saveCompetency = function (addAnother) {
     });
 
     $("#detailSlider").find('.sidebarInputGrouping').each(function() {
-        var vals = [];
+        var objectVals = {};
+        var arrayVals = [];
         var whichInputChoice = $(this).children().first().children('input,textarea').attr(inputChoice);
 
         $(this).find('.sidebarInputRow > input:visible, .sidebarInputRow > textarea:visible').each(function() {
-            var val;
             if ($(this).prev('select').length > 0) {
                 var selectVal = getValueOrNull($(this).prev('select').val());
                 var stringVal = getValueOrNull($(this).val());
                 if (selectVal != null && stringVal != null) {
-                    val = {};
-                    val[selectVal] = stringVal;
-                    vals.push(val);
+                    objectVals[selectVal] = stringVal;
                 }
             } else {
-                val = getValueOrNull($(this).val());
+                var val = getValueOrNull($(this).val());
                 if (val != null)
-                    vals.push(val);
+                    arrayVals.push(val);
             }
         });
-        if (vals.length > 0) {
-            thing[whichInputChoice] = vals;
+        if (arrayVals.length > 0) {
+            thing[whichInputChoice] = arrayVals;
+        } else if (Object.keys(objectVals).length > 0)  {
+            thing[whichInputChoice] = objectVals;
         } else {
             delete thing[whichInputChoice];
         }
@@ -325,7 +325,7 @@ createFramework = function () {
     framework["schema:dateCreated"] = new Date().toISOString();
     if (EcIdentityManager.ids.length > 0)
         framework.addOwner(EcIdentityManager.ids[0].ppk.toPk());
-    framework.name = [{"en-US": "New Framework"}];
+    framework.name = {"en-US" : "New Framework"};
     refreshSidebar();
     editSidebar();
     populateFramework();
