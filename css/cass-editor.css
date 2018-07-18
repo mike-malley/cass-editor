@@ -618,7 +618,7 @@ input.redButton {
     padding-bottom: 1rem;
 }
 
-.ceasnDataFields button:not(.addInputButton),
+.ceasnDataFields button:not(.addInputButton):not(.removeInputButton),
 #alignmentPanel button {
     font-size: normal;
     margin: 0px;
@@ -732,7 +732,16 @@ h3.sidebarViewList {
     margin-left: 0.5rem;
 }
 
-.sidebarInputRow:last-child > button {
+.removeInputButton {
+    visibility: hidden;
+    margin: 0;
+}
+
+.sidebarInputRow:last-child > .addInputButton {
+    visibility: visible;
+}
+
+.sidebarInputGrouping > .sidebarInputRow:not(:first-child) .removeInputButton {
     visibility: visible;
 }
 

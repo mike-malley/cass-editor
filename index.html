@@ -282,9 +282,10 @@
                                 <h3 id="sidebarName" class="viewMode sidebarViewList">Framework Name Here</h3>
                                 <div class="sidebarInputGrouping editMode editControl">
                                     <div class="sidebarInputRow">
+                                        <button title="Remove this value." class="removeInputButton"><i class="fa fa-times"></i></button>
                                         <select class="sidebarInputLanguageSelect"></select>
                                         <textarea id="sidebarNameInput" cassCompetency="name" cassFramework="name" ceasnCompetency="ceasn:competencyText" ceasnFramework="ceasn:name" skosCompetency="skos:prefLabel" skosFramework="dcterms:title" class="editMode editControl sidebarNameInput" data-group="sidebarNameInput" plural="true" value="Framework Name Here"></textarea>
-                                        <button title="Add another value." id="addNameInput" class="editMode editControl addInputButton"><i class="fa fa-plus"></i></button>
+                                        <button title="Add another value." id="addNameInput" class="addInputButton"><i class="fa fa-plus"></i></button>
                                     </div>
                                 </div>
                                 <!-- Description -->
@@ -292,6 +293,7 @@
                                 <p id="sidebarDescription" class="viewMode sidebarViewList">This is a super long description, it describes the things worth describing.</p>
                                 <div class="sidebarInputGrouping editMode editControl">
                                     <div class="sidebarInputRow">
+                                        <button title="Remove this value." class="removeInputButton"><i class="fa fa-times"></i></button>
                                         <select class="sidebarInputLanguageSelect"></select>
                                         <textarea id="sidebarDescriptionInput" cassCompetency="description" cassFramework="description" ceasnCompetency="ceasn:comment" ceasnFramework="ceasn:description" skosCompetency="skos:definition" skosFramework="dcterms:description" plural="true" data-group="sidebarDescriptionInput" class="sidebarDescriptionInput" style="height:6rem;">This is a super long description, it describes the things worth describing.</textarea>
                                         <button title="Add another value." id="addDescriptionInput" class="addInputButton"><i class="fa fa-plus"></i></button>
@@ -302,6 +304,7 @@
                                 <p id="sidebarConceptCreator" class="viewMode absentForCompetencies frameworkOnly sidebarViewList" style="font-weight:bold;"></p>
                                 <div class="sidebarInputGrouping editMode editControl absentForCompetencies frameworkOnly">
                                     <div class="sidebarInputRow">
+                                        <button title="Remove this value." class="removeInputButton"><i class="fa fa-times"></i></button>
                                         <select class="sidebarInputLanguageSelect"></select>
                                         <input id="sidebarConceptCreatorInput" type="url" skosFramework="dcterms:creator" data-group="sidebarConceptCreatorInput" plural="true" class="sidebarConceptCreatorInput" />
                                         <button title="Add another value." id="addConceptCreatorInput" data-target="sidebarConceptCreatorInput" class="addInputButton"><i class="fa fa-plus"></i></button>
@@ -334,6 +337,7 @@
                                     <p id="sidebarAlternativeName" class="viewMode competencyOnly sidebarViewList" style="font-weight:bold;"></p>
                                     <div class="sidebarInputGrouping editMode editControl competencyOnly">
                                         <div class="sidebarInputRow">
+                                            <button title="Remove this value." class="removeInputButton"><i class="fa fa-times"></i></button>
                                             <select class="sidebarInputLanguageSelect"></select>
                                             <input id="sidebarAlternativeNameInput" cassCompetency="schema:alternateName" skosCompetency="skos:altLabel" data-group="sidebarAlternativeNameInput" plural="true" class="sidebarAlternativeNameInput" />
                                             <button title="Add another value." id="addAlternativeNameInput" data-target="sidebarAlternativeNameInput" class="addInputButton"><i class="fa fa-plus"></i></button>
@@ -344,6 +348,7 @@
                                     <p id="sidebarHiddenLabel" class="viewMode competencyOnly sidebarViewList" style="font-weight:bold;"></p>
                                     <div class="sidebarInputGrouping editMode editControl competencyOnly">
                                         <div class="sidebarInputRow">
+                                            <button title="Remove this value." class="removeInputButton"><i class="fa fa-times"></i></button>
                                             <select class="sidebarInputLanguageSelect"></select>
                                             <input id="sidebarHiddenLabelInput" cassCompetency="skos:hiddenLabel" skosCompetency="skos:hiddenLabel" data-group="sidebarHiddenLabelInput" plural="true" class=" sidebarHiddenLabelInput" />
                                             <button title="Add another value." id="addHiddenLabelInput" data-target="sidebarHiddenLabelInput" class="addInputButton"><i class="fa fa-plus"></i></button>
@@ -359,6 +364,7 @@
                                     <p id="sidebarPreferredLabel" class="viewMode competencyOnly sidebarViewList" style="font-weight:bold;"></p>
                                     <div class="sidebarInputGrouping editMode editControl competencyOnly">
                                         <div class="sidebarInputRow">
+                                            <button title="Remove this value." class="removeInputButton"><i class="fa fa-times"></i></button>
                                             <select class="sidebarInputLanguageSelect"></select>
                                             <input id="sidebarPreferredLabelInput" cassCompetency="skos:note" skosCompetency="skos:note" data-group="sidebarPreferredLabelInput" plural="true" class="sidebarPreferredLabelInput" />
                                             <button title="Add another value." id="addPreferredLabelInput" data-target="sidebarPreferredLabelInput" class="addInputButton"><i class="fa fa-plus"></i></button>
@@ -369,6 +375,7 @@
                                     <p id="sidebarChangeNote" class="viewMode competencyOnly sidebarViewList" style="font-weight:bold;"></p>
                                     <div class="sidebarInputGrouping editMode editControl competencyOnly">
                                         <div class="sidebarInputRow">
+                                            <button title="Remove this value." class="removeInputButton"><i class="fa fa-times"></i></button>
                                             <select class="sidebarInputLanguageSelect"></select>
                                             <input id="sidebarChangeNoteInput" cassCompetency="skos:changeNote" skosCompetency="skos:changeNote" data-group="sidebarChangeNoteInput" plural="true" class="sidebarChangeNoteInput" />
                                             <button title="Add another value." id="addChangeNoteInput" data-target="sidebarChangeNoteInput" class="addInputButton"><i class="fa fa-plus"></i></button>
@@ -393,6 +400,7 @@
                                         <p id="sidebarCompetencyCategory" class="viewMode absentForConcepts sidebarViewList" style="font-weight:bold;"></p>
                                         <div class="sidebarInputGrouping editMode editControl absentForConcepts">
                                             <div class="sidebarInputRow">
+                                                <button title="Remove this value." class="removeInputButton"><i class="fa fa-times"></i></button>
                                                 <select class="sidebarInputLanguageSelect"></select>
                                                 <input id="sidebarCompetencyCategoryInput" cassCompetency="dcterms:type" ceasnCompetency="ceasn:competencyCategory" case="case:CFItemType" data-group="sidebarCompetencyCategoryInput" plural="true" class="sidebarCompetencyCategoryInput" />
                                                 <button title="Add another value." id="addCompetencyCategoryInput" data-target="sidebarCompetencyCategoryInput" class="addInputButton"><i class="fa fa-plus"></i></button>
@@ -407,6 +415,7 @@
                                         <p id="sidebarInLanguage" class="viewMode absentForConcepts sidebarViewList" style="font-weight:bold;"></p>
                                         <div class="sidebarInputGrouping editMode editControl absentForConcepts">
                                             <div class="sidebarInputRow">
+                                                <button title="Remove this value." class="removeInputButton"><i class="fa fa-times"></i></button>
                                                 <select class="sidebarInputLanguageSelect"></select>
                                                 <input id="sidebarInLanguageInput" cassCompetency="schema:inLanguage" ceasnCompetency="ceasn:inLanguage" data-group="sidebarInLanguageInput" plural="true" defaultToFramework="true" class="sidebarInLanguageInput" />
                                                 <button title="Add another value." id="addInLanguageInput" data-target="sidebarInLanguageInput" data-autocomplete-field="true" class="addInputButton"><i class="fa fa-plus"></i></button>
@@ -430,6 +439,7 @@
                                             <p id="sidebarIdentifier" class="viewMode sidebarViewList" style="font-weight:bold;"></p>
                                             <div class="sidebarInputGrouping editMode editControl">
                                                 <div class="sidebarInputRow">
+                                                    <button title="Remove this value." class="removeInputButton"><i class="fa fa-times"></i></button>
                                                     <select class="sidebarInputLanguageSelect"></select>
                                                     <input cassCompetency="schema:identifier" ceasnCompetency="ceasn:identifier" id="sidebarIdentifierInput" type="url" data-group="sidebarIdentifierInput" plural="true" class="sidebarIdentifierInput" />
                                                     <button title="Add another value." id="addIdentifierInput" data-target="sidebarIdentifierInput" class="addInputButton"><i class="fa fa-plus"></i></button>
@@ -450,6 +460,7 @@
                                             <p id="sidebarConceptKeyword" class="viewMode sidebarViewList" style="font-weight:bold;"></p>
                                             <div class="sidebarInputGrouping editMode editControl">
                                                 <div class="sidebarInputRow">
+                                                    <button title="Remove this value." class="removeInputButton"><i class="fa fa-times"></i></button>
                                                     <select class="sidebarInputLanguageSelect"></select>
                                                     <input id="sidebarConceptKeywordInput" cassCompetency="schema:keywords" ceasnCompetency="ceasn:conceptKeyword" data-group="sidebarConceptKeywordInput" plural="true" class="sidebarConceptKeywordInput" />
                                                     <button title="Add another value." id="addConceptKeywordInput" data-target="sidebarConceptKeywordInput" class="addInputButton"><i class="fa fa-plus"></i></button>
@@ -485,6 +496,7 @@
                                         <p id="sidebarCreator" class="viewMode absentForConcepts sidebarViewList" style="font-weight:bold;"></p>
                                         <div class="sidebarInputGrouping editMode editControl absentForConcepts">
                                             <div class="sidebarInputRow">
+                                                <button title="Remove this value." class="removeInputButton"><i class="fa fa-times"></i></button>
                                                 <select class="sidebarInputLanguageSelect"></select>
                                                 <input id="sidebarCreatorInput" cassFramework="schema:creator" ceasnFramework="ceasn:creator" data-group="sidebarCreatorInput" plural="true" type="url" class="sidebarCreatorInput" />
                                                 <button title="Add another value." id="addCreatorInput" data-target="sidebarCreatorInput" class="addInputButton"><i class="fa fa-plus"></i></button>
@@ -496,6 +508,7 @@
                                         <p id="sidebarPublisherName" class="viewMode absentForConcepts sidebarViewList" style="font-weight:bold;"></p>
                                         <div class="sidebarInputGrouping editMode editControl absentForConcepts">
                                             <div class="sidebarInputRow">
+                                                <button title="Remove this value." class="removeInputButton"><i class="fa fa-times"></i></button>
                                                 <select class="sidebarInputLanguageSelect"></select>
                                                 <input id="sidebarPublisherNameInput" cassFramework="ceasn:publisherName" ceasnFramework="ceasn:publisherName" data-group="sidebarPublisherNameInput" plural="true" class="sidebarPublisherNameInput" />
                                                 <button title="Add another value." id="addPublisherNameInput" data-target="sidebarPublisherNameInput" class="addInputButton"><i class="fa fa-plus"></i></button>
@@ -506,6 +519,7 @@
                                         <p id="sidebarPublisher" class="viewMode absentForConcepts sidebarViewList" style="font-weight:bold;"></p>
                                         <div class="sidebarInputGrouping editMode editControl absentForConcepts">
                                             <div class="sidebarInputRow">
+                                                <button title="Remove this value." class="removeInputButton"><i class="fa fa-times"></i></button>
                                                 <select class="sidebarInputLanguageSelect"></select>
                                                 <input id="sidebarPublisherInput" cassFramework="schema:publisher" ceasnFramework="ceasn:publisher" data-group="sidebarPublisherInput" plural="true" type="url" class="sidebarPublisherInput" />
                                                 <button title="Add another value." id="addPublisherInput" data-target="sidebarPublisherInput" class="addInputButton"><i class="fa fa-plus"></i></button>
@@ -517,6 +531,7 @@
                                         <p id="sidebarFrameworkInLanguage" class="viewMode absentForConcepts sidebarViewList" style="font-weight:bold;"></p>
                                         <div class="sidebarInputGrouping editMode editControl absentForConcepts">
                                             <div class="sidebarInputRow">
+                                                <button title="Remove this value." class="removeInputButton"><i class="fa fa-times"></i></button>
                                                 <select class="sidebarInputLanguageSelect"></select>
                                                 <input id="sidebarFrameworkInLanguageInput" cassFramework="schema:inLanguage" ceasnFramework="ceasn:inLanguage" data-group="sidebarFrameworkInLanguageInput" plural="true" class="sidebarFrameworkInLanguageInput" />
                                                 <button title="Add another value." id="addFrameworkInLanguageInput" data-target="sidebarFrameworkInLanguageInput" data-autocomplete-field="true" class="addInputButton"><i class="fa fa-plus"></i></button>
@@ -531,6 +546,7 @@
                                             <p id="sidebarFrameworkConceptKeyword" class="viewMode sidebarViewList" style="font-weight:bold;"></p>
                                             <div class="sidebarInputGrouping editMode editControl">
                                                 <div class="sidebarInputRow">
+                                                    <button title="Remove this value." class="removeInputButton"><i class="fa fa-times"></i></button>
                                                     <select class="sidebarInputLanguageSelect"></select>
                                                     <input id="sidebarFrameworkConceptKeywordInput" cassFramework="schema:keywords" ceasnFramework="ceasn:conceptKeyword" data-group="sidebarFrameworkConceptKeywordInput" plural="true" skosFramework="ceasn:conceptKeyword" class="sidebarFrameworkConceptKeywordInput" />
                                                     <button title="Add another value." id="addFrameworkConceptKeywordInput" data-target="sidebarFrameworkConceptKeywordInput" class="addInputButton"><i class="fa fa-plus"></i></button>
@@ -560,6 +576,7 @@
                                             <p id="sidebarSource" class="viewMode sidebarViewList" style="font-weight:bold;"></p>
                                             <div class="sidebarInputGrouping editMode editControl">
                                                 <div class="sidebarInputRow">
+                                                    <button title="Remove this value." class="removeInputButton"><i class="fa fa-times"></i></button>
                                                     <select class="sidebarInputLanguageSelect"></select>
                                                     <input id="sidebarSourceInput" cassFramework="dc:source" ceasnFramework="ceasn:source" type="url" data-group="sidebarSourceInput" plural="true" class="sidebarSourceInput" />
                                                     <button title="Add another value." id="addSourceInput" data-target="sidebarSourceInput" class="addInputButton"><i class="fa fa-plus"></i></button>
@@ -588,6 +605,7 @@
                                             <p id="sidebarFrameworkChangeNote" class="viewMode sidebarViewList absentForCompetencies" style="font-weight:bold;"></p>
                                             <div class="sidebarInputGrouping editMode editControl absentForCompetencies">
                                                 <div class="sidebarInputRow">
+                                                    <button title="Remove this value." class="removeInputButton"><i class="fa fa-times"></i></button>
                                                     <select class="sidebarInputLanguageSelect"></select>
                                                     <input id="sidebarFrameworkChangeNoteInput" cassFramework="skos:changeNote" skosFramework="skos:changeNote" data-group="sidebarFrameworkChangeNoteInput" plural="true" class="sidebarFrameworkChangeNoteInput" />
                                                     <button title="Add another value." id="addSidebarFrameworkChangeNoteInput" data-target="sidebarFrameworkChangeNoteInput" class="addInputButton"><i class="fa fa-plus"></i></button>
@@ -598,6 +616,7 @@
                                             <p id="sidebarHistoryNote" class="viewMode sidebarViewList absentForCompetencies" style="font-weight:bold;"></p>
                                             <div class="sidebarInputGrouping editMode editControl absentForCompetencies">
                                                 <div class="sidebarInputRow">
+                                                    <button title="Remove this value." class="removeInputButton"><i class="fa fa-times"></i></button>
                                                     <select class="sidebarInputLanguageSelect"></select>
                                                     <input id="sidebarHistoryNoteInput" cassFramework="skos:historyNote" skosFramework="skos:historyNote" data-group="sidebarHistoryNoteInput" plural="true" type="url" class="sidebarHistoryNoteInput" />
                                                     <button title="Add another value." id="addHistoryNoteInput" data-target="sidebarHistoryNoteInput" class="addInputButton"><i class="fa fa-plus"></i></button>
@@ -618,6 +637,7 @@
                                             <p id="sidebarFrameworkIdentifier" class="viewMode absentForConcepts sidebarViewList" style="font-weight:bold;"></p>
                                             <div class="sidebarInputGrouping editMode editControl absentForConcepts">
                                                 <div class="sidebarInputRow">
+                                                    <button title="Remove this value." class="removeInputButton"><i class="fa fa-times"></i></button>
                                                     <select class="sidebarInputLanguageSelect"></select>
                                                     <input cassFramework="schema:identifier" ceasnFramework="ceasn:identifier" plural="true" id="sidebarFrameworkIdentifierInput" type="url" data-group="sidebarFrameworkIdentifierInput" class="sidebarFrameworkIdentifierInput" />
                                                     <button title="Add another value." id="addFrameworkIdentifierInput" data-target="sidebarFrameworkIdentifierInput" class="addInputButton"><i class="fa fa-plus"></i></button>
@@ -643,6 +663,7 @@
                                             <p id="sidebarRights" class="viewMode sidebarViewList absentForConcepts" style="font-weight:bold;"></p>
                                             <div class="sidebarInputGrouping editMode editControl absentForConcepts">
                                                 <div class="sidebarInputRow">
+                                                    <button title="Remove this value." class="removeInputButton"><i class="fa fa-times"></i></button>
                                                     <select class="sidebarInputLanguageSelect"></select>
                                                     <input id="sidebarRightsInput" cassFramework="dc:rights" ceasnFramework="ceasn:rights" plural="true" type="url" data-group="sidebarRightsInput" class="sidebarRightsInput" />
                                                     <button title="Add another value." id="addRightsInput" data-target="sidebarRightsInput" class="addInputButton"><i class="fa fa-plus"></i></button>

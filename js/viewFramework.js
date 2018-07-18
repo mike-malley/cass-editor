@@ -968,6 +968,11 @@ $('body').on('click', '.addInputButton', function (evt) {
         setLanguageTagAutocomplete();
 });
 
+//Click handler for removeInput buttons
+$('body').on('click', '.removeInputButton', function (evt) {
+    $(this).parent().remove();
+});
+
 //Detect UL length changes (For edit panel fields that don't use input fields)
 // $('#detailSlider').on('DOMSubtreeModified', 'ul', function(evt) {
 //     if (ulLengths[$(this).attr('id')] != undefined && $('#' + $(this).attr('id') + ' li').length != ulLengths[$(this).attr('id')]) {
