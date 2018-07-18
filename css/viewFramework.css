@@ -289,12 +289,22 @@ hr {
 
 #detailSlider input,
 #detailSlider textarea,
-#detailSlider .ceasnDataFields select {
+#detailSlider .ceasnDataFields select:not(.sidebarInputLanguageSelect) {
     width: calc(100% - 1rem);
 }
 
-#detailSlider .ceasnDataFields select {
+#detailSlider .ceasnDataFields select:not(.sidebarInputLanguageSelect) {
     margin-bottom: 1rem;
+}
+
+#detailSlider p + input,
+#detailSlider p + textarea {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.sidebarInputLanguageSelect {
+    width: auto;
 }
 
 #detailSlider label {
