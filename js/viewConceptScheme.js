@@ -92,7 +92,9 @@ function afterConceptRefresh(level, subsearch) {
         }).detach().appendTo($(this));
     };
     $("#tree").each(sort).find("ul").each(sort);
+    highlightCompetencies();
     collapseCompetencies();
+    resizeEditFrameworkSection();
 }
 
 function refreshConcept(col, level, subsearch, recurse, done) {
@@ -106,7 +108,14 @@ function refreshConcept(col, level, subsearch, recurse, done) {
         treeNode = $("[id='" + col.shortId() + "']");
         treeNode.remove();
     }
-    treeNode = $("#tree").append("<li class = 'competency' draggable='true' ondragstart='dragConcept(event);' ontouchstart='handleTouchStartConcept(event)' ontouchmove='handleTouchMoveConcept(event);' ontouchend='handleTouchEndConcept(event);' ondrop='dropConcept(event);' ondragover='allowConceptDrop(event);'><span></span><ul></ul></li>").children().last();
+
+    var draggable;
+    if (!viewMode && framework.canEditAny(EcIdentityManager.getMyPks()))
+        draggable = 'true';
+    else
+        draggable = 'false';
+
+    treeNode = $("#tree").append("<li class = 'competency' draggable='" + draggable + "' ondragstart='dragConcept(event);' ontouchstart='handleTouchStartConcept(event)' ontouchmove='handleTouchMoveConcept(event);' ontouchend='handleTouchEndConcept(event);' ondrop='dropConcept(event);' ondragover='allowConceptDrop(event);'><span></span><ul></ul></li>").children().last();
     treeNode.attr("id", col.shortId());
     if (col["skos:prefLabel"] != null && col["skos:prefLabel"] != "NULL" && col["skos:prefLabel"] != col["skos:definition"] && col["skos:definition"]) {
         var definition = col["skos:definition"];
@@ -114,10 +123,14 @@ function refreshConcept(col, level, subsearch, recurse, done) {
         treeNode.children().first().prepend("<small/>").children().first().addClass("competencyDescription").css('display', 'block').text(Thing.getDisplayStringFrom(definition));
     }
     var prefLabel = col["skos:prefLabel"];
+    if (prefLabel == null) prefLabel = "Unknown Concept.";
     prefLabel = EcArray.isArray(prefLabel) ? prefLabel : [prefLabel];
     treeNode.children().first().prepend("<span/>").children().first().addClass("competencyName").text(Thing.getDisplayStringFrom(prefLabel));
+    for (var i = prefLabel.length - 1; i > 0; i--) {
+        treeNode.children().first().find('.competencyName').after($('<span class="competencyAKA">AKA: ' + Thing.getDisplayStringFrom(prefLabel[i]) + '</span>'));
+    }
     if (queryParams.link == "true")
-        treeNode.prepend(" <a style='float:right;' target='_blank'><i class='fa fa-link' aria-hidden='true'></a>").children().first().attr("href", col.shortId());
+        treeNode.prepend(" <a style='float:right;' title='Click to navigate to link address. Right click to copy link address.' target='_blank'><i class='fa fa-link' aria-hidden='true'></a>").children().first().attr("href", col.shortId());
     if (queryParams.select != null)
         treeNode.prepend("<input type='checkbox' tabIndex='-1'>");
     if (subsearch != null)
@@ -132,6 +145,10 @@ function refreshConcept(col, level, subsearch, recurse, done) {
             }, callback);
         }, function (conceptIds) {
             afterConceptRefresh();
+            if ($("#collapseAllCompetencies").css("display") === 'none') {
+                $("#collapseAllCompetencies").css("display", "");
+                $("#expandAllCompetencies").css("display", "");
+            }
         });
     }
     if (done != null && done !== undefined) {
@@ -143,6 +160,7 @@ function refreshConcept(col, level, subsearch, recurse, done) {
 editConceptSidebar = function () {
     $("#detailSlider").addClass("detailSliderEdit").removeClass("detailSliderView");
     $("#editFrameworkSection label").css("display", "");
+    $('.orangeUri').removeClass('active');
     $("#sidebarNameInputLabel").addClass("required");
 
     changedFields = {};
@@ -151,6 +169,10 @@ editConceptSidebar = function () {
     //Don't persist the invalidInput class between edits
     $('.invalidInput').each(function () {
         $(this).removeClass('invalidInput');
+    });
+
+    $('.invalidLanguage').each(function() {
+        $(this).removeClass('invalidLanguage');
     });
 
     initULLengths();
@@ -179,8 +201,10 @@ editConceptSidebar = function () {
         $("#sidebarDelete").prop('disabled', true);
         if (thing == framework) {
             $("#sidebarFeedback").html("Some edit options are limited: <li>You do not own this concept scheme.</li> ");
-        } else
+        } else {
             $("#sidebarFeedback").append("<li>You do not own this concept.</li> ");
+            $(".ceasnDataFields button,input,textarea,select").prop('disabled', true);
+        }
     }
 
     if (thing["schema:dateCreated"] == null || thing["schema:dateCreated"] === undefined) {
@@ -221,6 +245,65 @@ editConceptSidebar = function () {
         }
     }
 
+    try {
+        $('#sidebarNameInput').autocomplete("destroy");
+        $('#sidebarNameInput').removeData('autocomplete');
+    } catch (e) {}
+
+
+    if (selectedCompetency != null && isFirstEdit === true) {
+        EcConcept.search(repo, $('#sidebarNameInput').val(), function (results) {
+            var concepts = [];
+            for (var i = 0; i < results.length; i++) {
+                comp = EcRepository.getBlocking(results[i].shortId());
+                if (comp.isId(results[i].shortId()) && results[i].shortId().indexOf("http") != -1) {
+                    var name = results[i]["skos:prefLabel"];
+                    name = Thing.getDisplayStringFrom(name);
+                    concepts.push({label: name, id: results[i].shortId()});
+                }
+            }
+            $('#sidebarNameInput').autocomplete({
+                source: concepts,
+                appendTo: '.sidebarEditSection',
+                select: function (event, ui) {
+                    if (confirm("Selecting this concept will delete the one you are currently creating and reuse an existing concept. You may not have permissions to edit this concept further. Would you like to continue?")) {
+                        var concept = EcRepository.getBlocking(ui.item.id);
+                        var results = [];
+                        $(".changedField").removeClass("changedField");
+                        results.push(concept.shortId());
+                        var parent;
+                        if (selectedCompetency["skos:broader"] != null) {
+                            parent = selectedCompetency["skos:broader"];
+                            if (EcArray.isArray(parent)) {
+                                parent = parent[0];
+                            }
+                        }
+                        else {
+                            parent = framework.shortId();
+                        }
+                        //Delete the default created concept if selecting an existing one from dropdown
+                        deleteConceptInner(selectedCompetency);
+                        selectedCompetency = concept;
+                        appendConcepts(results, parent, true);
+                    }
+                }
+            });
+        }, error, {});
+    } else {
+        $('#sidebarNameInput').autocomplete = null;
+    }
+    $('input[data-autocompleteCache="true"]').each(function () {
+        attachCustomAutocomplete(this);
+    });
+    if (queryParams.ceasnDataFields === 'true') {
+        $(".ceasnDataFields").show();
+    }
+    if (queryParams.tlaProfile == 'true') {
+        $(".ceasnDataFields").show();
+        $(".ceasnOnly").hide();
+        $(".tlaDataFields").show();
+    }
+
     if (selectedCompetency != null) {
         $('.ceasnCompetency .editMode').show();
     } else {
@@ -233,4 +316,48 @@ editConceptSidebar = function () {
         }
     });
     $(".sidebar table").css("margin-top", "calc(" + $(".sidebarToolbar").height() + "px)");
+}
+
+appendConcepts = function (results, parent, newLink) {
+    if (viewMode) return;
+    for (var i = 0; i < results.length; i++) {
+        var thing = EcRepository.getBlocking(results[i]);
+        parent = EcRepository.getBlocking(parent);
+        if (thing.isAny(new EcConcept().getTypes())) {
+            if (parent.isAny(new EcConcept().getTypes())) {
+                thing["skos:broader"] = [parent.shortId()];
+                if (parent["skos:narrower"] == null)
+                    parent["skos:narrower"] = [];
+                EcArray.setAdd(parent["skos:narrower"], thing.shortId());
+                if ($("#private")[0].checked) {
+                    parent = EcEncryptedValue.toEncryptedValue(parent);
+                    thing = EcEncryptedValue.toEncryptedValue(thing);
+                }
+                repo.saveTo(parent, function() {
+                    repo.saveTo(thing, function () {
+                        refreshSidebar();
+                    }, error);
+                    refreshSidebar();
+                }, error);
+            }
+            else {
+                EcArray.setAdd(framework["skos:hasTopConcept"], thing.shortId());
+                thing["skos:topConceptOf"] = framework.shortId();
+                if ($("#private")[0].checked) {
+                    framework = EcEncryptedValue.toEncryptedValue(framework);
+                    thing = EcEncryptedValue.toEncryptedValue(thing);
+                }
+                repo.saveTo(framework, function() {
+                    repo.saveTo(thing, function () {
+                        framework = EcConceptScheme.getBlocking(framework.id);
+                        refreshSidebar();
+                    }, function(error) {
+                        console.log(error);
+                        framework = EcConceptScheme.getBlocking(framework.id);
+                        refreshSidebar();
+                    });
+                }, error);
+            }
+        }
+    }
 }

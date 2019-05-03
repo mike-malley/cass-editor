@@ -1423,6 +1423,20 @@ $('#sidebarNameInput').on('keyup', function (evt) {
 				$('#sidebarNameInput').autocomplete("option", "source", competencies);
 			}, error, {});
 		}
+		else {
+			EcConcept.search(repo, $(this).val(), function (results) {
+				var concepts = [];
+				for (var i = 0; i < results.length; i++) {
+					c = EcRepository.getBlocking(results[i].shortId());
+					if (c.isId(results[i].shortId()) && results[i].shortId().indexOf("http") != -1) {
+						var name = results[i]["skos:prefLabel"];
+						name = Thing.getDisplayStringFrom(name);
+						concepts.push({label: name, id: results[i].shortId()});
+					}
+				}
+				$('#sidebarNameInput').autocomplete("option", "source", concepts);
+			}, error, {});
+		}
 	}
 });
 
