@@ -90,6 +90,20 @@
                             </a>
                         </div>
                     </div>
+                    <div
+                        class="navbar-item has-dropdown is-hoverable"
+                        v-if="queryParams.x">
+                        <a class="navbar-link is-primary">
+                            Experimental
+                        </a>
+                        <div class="navbar-dropdown">
+                            <router-link
+                                class="navbar-item"
+                                to="/organizations">
+                                Organizations
+                            </router-link>
+                        </div>
+                    </div>
                     <!--<div class="navbar-item">
                         <router-link
                             class="has-text-light"
@@ -220,6 +234,7 @@ export default {
 
             this.openWebSocket(r);
         }
+        var me = this;
     },
     methods: {
         cappend: function(event) {
