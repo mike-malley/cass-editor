@@ -1194,6 +1194,11 @@ export default {
                 me.detailsDetected.fileType = "docx";
                 me.firstImport = false;
                 me.status = "File selected.";
+            } else if (file.name.endsWith(".html")) {
+                me.importType = "pdf";
+                me.detailsDetected.fileType = "html";
+                me.firstImport = false;
+                me.status = "File selected.";
             } else {
                 me.showErrors = true;
                 me.status = "CaSS cannot read the file " + file.name + ". Please check that the file has the correct file extension.";
@@ -1371,11 +1376,30 @@ export default {
             var formData = new FormData();
             formData.append(me.file[0].name, me.file[0]);
             me.status = 'importing file...';
-            EcRemote.postExpectingObject(
+            EcRemote.postExpectingString(
                 "https://t3.cassproject.org/service/parse/",
                 "docx",
                 formData,
-                function(d) {
+                function(s) {
+                    var d = null;
+                    try {
+                        d = JSON.parse(s);
+                    } catch (ex) {
+                        me.showErrors = true;
+                        me.status = s;
+                        me.statusType = "error";
+                        me.errors.push(s);
+                        me.processingFile = false;
+                        return;
+                    }
+                    if (d == null) {
+                        me.showErrors = true;
+                        me.status = s;
+                        me.statusType = "error";
+                        me.errors.push(s);
+                        me.processingFile = false;
+                        return;
+                    }
                     var uuid = new UUID(3, "nil", d.name).format();
                     var f = new EcFramework();
                     me.status = 'looking for existing framework...';
@@ -1393,7 +1417,13 @@ export default {
                     }, function(error) {
                         console.error(error);
                     });
-                }, console.error);
+                }, function(str) {
+                    me.showErrors = true;
+                    me.status = s;
+                    me.statusType = "error";
+                    me.errors.push(s);
+                    me.processingFile = false;
+                });
             me.statusType = "info";
             me.status = 'processing file...';
         },
