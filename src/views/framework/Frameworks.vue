@@ -1,42 +1,75 @@
 <template>
-    <div class="page-framework-list">
-        <div class="container">
+    <div class="framework-list-page">
+        <RightAside v-if="showRightAside" />
+        <!-- search field -->
+        <div class="container is-fluid is-marginless is-paddingless">
             <div class="section">
-                <!-- sort options -->
-                <div class="control">
-                    <label
-                        v-if="queryParams.concepts==='true'"
-                        class="radio is-large"
-                        for="dcterms:title.keyword">
+                <div class="field">
+                    <p class="control has-icons-right">
                         <input
-                            type="radio"
-                            value="dcterms:title.keyword"
-                            id="dcterms:title.keyword"
-                            v-model="sortBy">
-                        Sort alphabetically</label>
-                    <label
-                        v-else
-                        class="radio"
-                        for="name.keyword">
-                        <input
-                            type="radio"
-                            value="name.keyword"
-                            id="name.keyword"
-                            v-model="sortBy">
-                        Sort alphabetically</label>
-                    <label
-                        class="radio"
-                        for="schema:dateModified">
-                        <input
-                            type="radio"
-                            value="schema:dateModified"
-                            id="schema:dateModified"
-                            v-model="sortBy">
-                        Sort by last modified</label>
+                            class="input is-large"
+                            ref="text"
+                            :placeholder="'Search for '+type+'s...'"
+                            @change="updateSearchTerm($event)"
+                            @keyup.enter="updateSearchTerm($event)">
+                        <span
+                            class="icon is-small is-right">
+                            <i class="fas fa-search" />
+                        </span>
+                    </p>
                 </div>
+                <!-- filter option button opens side bar -->
+                <div class="buttons is-right">
+                    <div
+                        @click="clearAllFilters()"
+                        class="button is-dark is-outlined">
+                        clear filters
+                    </div>
+                    <div
+                        class="button is-primary is-outlined"
+                        @click="$store.commit('app/showRightAside', 'FilterAndSort')">
+                        filter options
+                    </div>
+                </div>
+                <div class="section">
+                    <span
+                        v-for="filter in filteredQuickFilters"
+                        :key="filter"
+                        class="tag is-dark">
+                        {{ filter.label }}
+                        <button
+                            @click="removeFilter('quickFilters', filter)"
+                            class="delete is-small" />
+                    </span>
+                    <template class="">
+                        <span
+                            v-if="sortResults.label"
+                            class="tag is-dark">
+                            {{ sortResults.label }}
+                            <button
+                                @click="clearSortBy"
+                                class="delete is-small" />
+                        </span>
+                    </template>
+                    <template class="section">
+                        <span
+                            v-for="filter in filteredSearchTo"
+                            :key="filter"
+                            class="tag is-dark">
+                            {{ filter.label }}
+                            <button
+                                @click="removeFilter('applySearchTo', filter)"
+                                class="delete is-small" />
+                        </span>
+                    </template>
+                </div>
+            </div>
+            <div
+                v-if="!queryParams.concepts==='true'"
+                class="section">
                 <!-- show my frameworks radio -->
                 <div class="control">
-                    <div v-if="queryParams.show!=='mine'&&queryParams.conceptShow!=='mine'&&numIdentities">
+                    <div v-if="queryParams.show !== 'mine' && queryParams.conceptShow !== 'mine' && numIdentities">
                         <label
                             class="checkbox"
                             for="showMine">
@@ -63,10 +96,10 @@
                         <span
                             class="framework-list-item__details is-light"
                             v-if="queryParams.concepts!=='true'">
-                            <span class="details-label">
+                            <span>
                                 Items:
                             </span>
-                            <span class="details-value">
+                            <span>
                                 {{ slotProps.item.competency ? slotProps.item.competency.length : 0 }}
                             </span>
                         </span>
@@ -146,6 +179,7 @@
 </template>
 <script>
 import List from '@/lode/components/lode/List.vue';
+import RightAside from '@/components/framework/RightAside.vue';
 import common from '@/mixins/common.js';
 export default {
     name: "Frameworks",
@@ -157,6 +191,7 @@ export default {
         return {
             repo: window.repo,
             showMine: false,
+            showNotMine: false,
             numIdentities: EcIdentityManager.ids.length,
             sortBy: null
         };
@@ -164,8 +199,35 @@ export default {
     created: function() {
         this.sortBy = this.queryParams.concepts === 'true' ? "dcterms:title.keyword" : "name.keyword";
         this.$store.commit("editor/t3Profile", false);
+        this.$store.commit('editor/framework', null);
+        this.spitEvent('viewChanged');
     },
     computed: {
+        applySearchTo: function() {
+            return this.$store.getters['app/applySearchTo'];
+        },
+        filteredSearchTo: function() {
+            let filterValues = this.applySearchTo.filter(item => item.checked === true);
+            console.log('filtered value', filterValues);
+            return filterValues;
+        },
+        quickFilters: function() {
+            return this.$store.getters['app/quickFilters'];
+        },
+        filteredQuickFilters: function() {
+            let filterValues = this.quickFilters.filter(item => item.checked === true);
+            console.log('filtered value', filterValues);
+            return filterValues;
+        },
+        sortResults: function() {
+            return this.$store.getters['app/sortResults'];
+        },
+        showRightAside: function() {
+            return this.$store.getters['app/showRightAside'];
+        },
+        frameworkSearchTerm: function() {
+            return this.$store.getters['app/searchTerm'];
+        },
         type: function() {
             return this.queryParams.concepts === 'true' ? "ConceptScheme" : "Framework";
         },
@@ -177,6 +239,18 @@ export default {
             if (this.showMine || (this.queryParams && this.queryParams.concepts !== "true" && this.queryParams.show === "mine") ||
                 (this.queryParams && this.queryParams.concepts === "true" && this.queryParams.conceptShow === "mine")) {
                 search += " AND (";
+                for (var i = 0; i < EcIdentityManager.ids.length; i++) {
+                    if (i !== 0) {
+                        search += " OR ";
+                    }
+                    var id = EcIdentityManager.ids[i];
+                    search += "@owner:\"" + id.ppk.toPk().toPem() + "\"";
+                    search += " OR @owner:\"" + this.addNewlinesToId(id.ppk.toPk().toPem()) + "\"";
+                }
+                search += ")";
+            }
+            if (this.showNotMine) {
+                search += " AND NOT (";
                 for (var i = 0; i < EcIdentityManager.ids.length; i++) {
                     if (i !== 0) {
                         search += " OR ";
@@ -201,18 +275,42 @@ export default {
             return obj;
         }
     },
-    components: {List},
+    components: {List, RightAside},
     methods: {
+        clearAllFilters: function() {
+            this.$store.commit('app/clearSearchFilters');
+            this.clearSortBy();
+            this.showMine = false;
+            this.showNotMine = false;
+        },
+        clearSortBy: function() {
+            this.$store.commit('app/sortResults', []);
+            this.sortBy = this.queryParams.concepts === 'true' ? "dcterms:title.keyword" : "name.keyword";
+        },
+        removeFilter: function(filterType, val) {
+            let storeCaller = 'app/' + filterType;
+            let filterArray = this.$store.getters[storeCaller];
+            let objIndex = filterArray.findIndex(obj => obj.id === val.id);
+            filterArray[objIndex].checked = false;
+            this.$store.commit(storeCaller, filterArray);
+        },
+        updateSearchTerm: function(e) {
+            this.$store.commit('app/searchTerm', e.target.value);
+        },
         frameworkClick: function(framework) {
             var me = this;
             if (this.queryParams.concepts === "true") {
                 EcConceptScheme.get(framework.id, function(success) {
                     me.$store.commit('editor/framework', success);
+                    me.$store.commit('app/setCanViewComments', me.canViewCommentsCurrentFramework());
+                    me.$store.commit('app/setCanAddComments', me.canViewCommentsCurrentFramework());
                     me.$router.push({name: "conceptScheme", params: {frameworkId: framework.id}});
                 }, console.error);
             } else {
                 EcFramework.get(framework.id, function(success) {
                     me.$store.commit('editor/framework', success);
+                    me.$store.commit('app/setCanViewComments', me.canViewCommentsCurrentFramework());
+                    me.$store.commit('app/setCanAddComments', me.canViewCommentsCurrentFramework());
                     me.$router.push({name: "framework", params: {frameworkId: framework.id}});
                 }, console.error);
             }
@@ -238,6 +336,27 @@ export default {
             // End public key line
             pem = pem.substring(0, length - 24) + "\n" + pem.substring(length - 24);
             return pem;
+        }
+    },
+    watch: {
+        sortResults: function() {
+            if (this.sortResults.id === "lastEdited") {
+                this.sortBy = "schema:dateModified";
+            } else if (this.sortResults.id === "dateCreated") {
+                this.sortBy = "schema:dateCreated";
+            }
+        },
+        filteredQuickFilters: function() {
+            this.showMine = false;
+            this.showNotMine = false;
+            for (var i = 0; i < this.filteredQuickFilters.length; i++) {
+                if (this.filteredQuickFilters[i].id === "ownedByMe") {
+                    this.showMine = true;
+                }
+                if (this.filteredQuickFilters[i].id === "notOwnedByMe") {
+                    this.showNotMine = true;
+                }
+            }
         }
     }
 };
