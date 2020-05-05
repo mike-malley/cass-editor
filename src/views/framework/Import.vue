@@ -56,7 +56,8 @@
                         CaSS has detected a framework!
                     </span>
                     <br><br>
-                    Please review the competency framework and file details gathered below. To continue with the input of this competency framework, press Accept Details & Review. To cancel and review or change your input file, press cancel.                </p>
+                    Please review the competency framework and file details gathered below. To continue with the input of this competency framework, press Accept Details & Review. To cancel and review or change your input file, press cancel.
+                </p>
                 <p
                     v-if="importTransition === 'preview'"
                     class="">
@@ -233,6 +234,7 @@
                     :class="{'is-hidden': !hierarchyIsdoneLoading}"
                     v-if="importFramework"
                     @doneLoadingNodes="handleDoneLoading"
+                    @searchThings="handleSearch($event)"
                     :container="importFramework"
                     containerType="Framework"
                     containerNodeProperty="competency"
@@ -533,6 +535,7 @@ export default {
                     }
                     me.$nextTick(function() {
                         me.$store.commit('app/importFramework', f);
+                        me.$store.commit('editor/framework', f);
                     });
                 }, function(status) {
                     me.$store.commit('app/importStatus', status);
@@ -547,6 +550,9 @@ export default {
         this.spitEvent('viewChanged');
     },
     methods: {
+        handleSearch: function(e) {
+            this.$store.commit('app/showModal', e);
+        },
         handleImportFromTabs: function(e) {
             this.caseDocs = e;
             this.importCase();
@@ -595,10 +601,10 @@ export default {
         // pulled over from Thing.vue in LODE - should be different for this case
         exportObject: function(type) {
             var guid;
-            if (EcRepository.shouldTryUrl(this.framework.id) === false) {
-                guid = EcCrypto.md5(this.framework.id);
+            if (EcRepository.shouldTryUrl(this.importFramework.id) === false) {
+                guid = EcCrypto.md5(this.importFramework.id);
             } else {
-                guid = this.framework.getGuid();
+                guid = this.importFramework.getGuid();
             }
             var link = this.repo.selectedServer + "data/" + guid;
             if (type === "asn") {
@@ -772,17 +778,22 @@ export default {
                         me.$store.commit('app/addImportError', error);
                         me.$store.commit('app/importTransition', 'process');
                     }
-                }, function() {
-                    // If JSON-LD doesn't work, try JSON
-                    ASNImport.analyzeFile(file, function(data) {
-                        me.$store.commit('app/importFileType', 'asn');
-                        me.$store.commit('app/importStatus', "1 Framework and " + EcObject.keys(data).length + " Competencies Detected.");
-                        me.$store.commit('app/importTransition', 'info');
-                        me.competencyCount = EcObject.keys(data).length;
-                    }, function(error) {
-                        me.$store.commit('app/addImportError', error);
+                }, function(failure) {
+                    if (file.name.endsWith(".json")) {
+                        // If JSON-LD doesn't work, try JSON
+                        ASNImport.analyzeFile(file, function(data) {
+                            me.$store.commit('app/importFileType', 'asn');
+                            me.$store.commit('app/importStatus', "1 Framework and " + EcObject.keys(data).length + " Competencies Detected.");
+                            me.$store.commit('app/importTransition', 'info');
+                            me.competencyCount = EcObject.keys(data).length;
+                        }, function(error) {
+                            me.$store.commit('app/addImportError', error);
+                            me.$store.commit('app/importTransition', 'process');
+                        });
+                    } else {
+                        me.$store.commit('app/addImportError', failure);
                         me.$store.commit('app/importTransition', 'process');
-                    });
+                    }
                 });
             } else if (file.name.endsWith(".xml")) {
                 MedbiqImport.analyzeFile(file, function(data) {
@@ -916,6 +927,7 @@ export default {
                         me.analyzeImportFile();
                     } else {
                         me.$store.commit('app/importFramework', f);
+                        me.$store.commit('editor/framework', f);
                         me.importSuccess();
                         me.spitEvent("importFinished", f.shortId(), "importPage");
                     }
@@ -945,6 +957,7 @@ export default {
                     me.analyzeImportFile();
                 } else {
                     me.$store.commit('app/importFramework', f);
+                    me.$store.commit('editor/framework', f);
                     me.importSuccess();
                     me.spitEvent("importFinished", f.shortId(), "importPage");
                 }
@@ -977,6 +990,7 @@ export default {
                 me.repo.multiput(all, function() {
                     for (var i = 0; i < frameworks.length; i++) {
                         me.$store.commit('app/importFramework', frameworks[i]);
+                        me.$store.commit('editor/framework', frameworks[i]);
                         me.importSuccess();
                         me.spitEvent("importFinished", frameworks[i].shortId(), "importPage");
                     }
@@ -1179,6 +1193,7 @@ export default {
                             me.analyzeImportFile();
                         } else {
                             me.$store.commit('app/importFramework', f);
+                            me.$store.commit('editor/framework', f);
                             me.importSuccess();
                             me.spitEvent("importFinished", f.shortId(), "importPage");
                         }
@@ -1227,6 +1242,7 @@ export default {
                     framework = EcFramework.getBlocking(data);
                     me.$store.commit('app/importFramework', framework);
                 }
+                me.$store.commit('editor/framework', framework);
                 me.spitEvent("importFinished", framework.shortId(), "importPage");
                 if (me.importFile != null) {
                     me.importFile.splice(0, 1);
@@ -1236,9 +1252,6 @@ export default {
                     me.analyzeImportFile();
                 } else {
                     me.importSuccess();
-                    if (me.queryParams.concepts !== "true") {
-                        me.$store.commit('app/importFramework', framework);
-                    }
                 }
             }, function(failure) {
                 me.$store.commit('app/importTransition', 'process');
@@ -1398,6 +1411,7 @@ export default {
                         me.caseDocs[firstIndex].success = true;
                         EcFramework.get(id, function(f) {
                             me.$store.commit('app/importFramework', f);
+                            me.$store.commit('editor/framework', framework);
                             me.spitEvent("importFinished", f.shortId(), "importPage");
                         }, console.error);
                         me.importCase();

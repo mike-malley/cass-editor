@@ -9,7 +9,8 @@
             <div class="framework-wrapper">
                 <Component
                     :is="dynamicThingComponent"
-                    :obj="framework"
+                    :id="'scroll-' + framework.shortId().split('/').pop()"
+                    :obj="changedObj ? changedObj : framework"
                     :repo="repo"
                     :parentNotEditable="queryParams.view==='true'"
                     :profile="frameworkProfile"
@@ -145,7 +146,8 @@ export default {
             properties: "primary",
             config: null,
             privateFramework: false,
-            selectedArray: []
+            selectedArray: [],
+            changedObj: null
         };
     },
     computed: {
@@ -191,6 +193,9 @@ export default {
                 return true;
             }
             return false;
+        },
+        commentScrollTo: function() {
+            return this.$store.getters['editor/commentScrollTo'];
         },
         frameworkProfile: function() {
             if (this.$store.state.editor.t3Profile === true) {
@@ -563,6 +568,9 @@ export default {
         },
         config: function() {
             this.$store.commit('editor/configuration', this.config);
+        },
+        commentScrollTo: function() {
+            this.$scrollTo(this.commentScrollTo.scrollId);
         }
     },
     methods: {
@@ -619,6 +627,7 @@ export default {
             this.editingFramework = true;
         },
         onDoneEditingNode: function() {
+            this.changedObj = EcRepository.getBlocking(this.framework.shortId());
             this.editingFramework = false;
         },
         onOpenComments: function() {

@@ -20,7 +20,15 @@ const state = {
     commonPathIframe: '',
     iframeCompetencyPathInterframework: '',
     iframeConceptPath: '',
-    addCommentAboutId: ''
+    addCommentAboutId: '',
+    addCommentType: '',
+    commentToEdit: {},
+    commentToReply: {},
+    frameworkCommentDataLoaded: false,
+    frameworkCommentList: [],
+    frameworkCommentPersonMap: {},
+    commentsToDelete: [],
+    commentScrollTo: {}
 };
 const mutations = {
     framework(state, f) {
@@ -70,13 +78,42 @@ const mutations = {
     },
     setAddCommentAboutId(state, val) {
         state.addCommentAboutId = val;
+    },
+    setAddCommentType(state, val) {
+        state.addCommentType = val;
+    },
+    setCommentToEdit(state, val) {
+        state.commentToEdit = val;
+    },
+    setCommentToReply(state, val) {
+        state.commentToReply = val;
+    },
+    setCommentsToDelete(state, val) {
+        state.commentsToDelete = val;
+    },
+    clearFrameworkCommentData(state) {
+        state.frameworkCommentDataLoaded = false;
+        state.frameworkCommentList = [];
+        state.frameworkCommentPersonMap = {};
+    },
+    setFrameworkCommentDataLoaded(state, val) {
+        state.frameworkCommentDataLoaded = val;
+    },
+    setFrameworkCommentList(state, val) {
+        state.frameworkCommentList = val;
+    },
+    setFrameworkCommentPersonMap(state, val) {
+        state.frameworkCommentPersonMap = val;
+    },
+    setCommentScrollTo(state, val) {
+        state.commentScrollTo = val;
     }
 };
 const actions = {
 
 };
 const getters = {
-    framework: function(sate) {
+    framework: function(state) {
         return state.framework;
     },
     organization: function(state) {
@@ -103,7 +140,7 @@ const getters = {
     newCompetency: function(state) {
         return state.newCompetency;
     },
-    t3Profile: function(staet) {
+    t3Profile: function(state) {
         return state.t3Profile;
     },
     changedObject: function(state) {
@@ -114,6 +151,30 @@ const getters = {
     },
     addCommentAboutId: function(state) {
         return state.addCommentAboutId;
+    },
+    addCommentType: function(state) {
+        return state.addCommentType;
+    },
+    commentToEdit: function(state) {
+        return state.commentToEdit;
+    },
+    commentToReply: function(state) {
+        return state.commentToReply;
+    },
+    commentsToDelete: function(state) {
+        return state.commentsToDelete;
+    },
+    frameworkCommentDataLoaded: function(state) {
+        return state.frameworkCommentDataLoaded;
+    },
+    frameworkCommentList: function(state) {
+        return state.frameworkCommentList;
+    },
+    frameworkCommentPersonMap: function(state) {
+        return state.frameworkCommentPersonMap;
+    },
+    commentScrollTo: function(state) {
+        return state.commentScrollTo;
     }
 };
 

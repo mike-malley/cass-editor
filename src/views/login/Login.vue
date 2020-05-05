@@ -53,7 +53,8 @@
                                     type="password"
                                     class="input"
                                     v-model="password"
-                                    placeholder="password">
+                                    placeholder="password"
+                                    @keyup.enter="attemptCassLogin">
                             </div>
                         </div>
                         <div v-if="identityFetchFailed">

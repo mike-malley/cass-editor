@@ -22,6 +22,8 @@
 </template>
 
 <script>
+import {mapState} from 'vuex';
+
 import common from '@/mixins/common.js';
 import cassModal from './components/CassModal.vue';
 import DynamicModal from './components/modals/DynamicModal.vue';
@@ -88,15 +90,17 @@ export default {
                     if (me.queryParams.concepts === "true") {
                         EcConceptScheme.get(me.queryParams.frameworkId, function(success) {
                             me.$store.commit('editor/framework', success);
+                            me.$store.commit('editor/clearFrameworkCommentData');
                             me.$store.commit('app/setCanViewComments', me.canViewCommentsCurrentFramework());
-                            me.$store.commit('app/setCanAddComments', me.canViewCommentsCurrentFramework());
+                            me.$store.commit('app/setCanAddComments', me.canAddCommentsCurrentFramework());
                             me.$router.push({name: "conceptScheme", params: {frameworkId: me.queryParams.frameworkId}});
                         }, console.error);
                     } else {
                         EcFramework.get(me.queryParams.frameworkId, function(success) {
                             me.$store.commit('editor/framework', success);
+                            me.$store.commit('editor/clearFrameworkCommentData');
                             me.$store.commit('app/setCanViewComments', me.canViewCommentsCurrentFramework());
-                            me.$store.commit('app/setCanAddComments', me.canViewCommentsCurrentFramework());
+                            me.$store.commit('app/setCanAddComments', me.canAddCommentsCurrentFramework());
                             me.$router.push({name: "framework", params: {frameworkId: me.queryParams.frameworkId}});
                         }, console.error);
                     }
@@ -131,6 +135,9 @@ export default {
             ss.href = this.queryParams.css;
             document.getElementsByTagName("head")[0].appendChild(ss);
         }
+        /* if (!this.loggedInPerson) {
+            this.$router.push({name: 'login'});
+        }*/
     },
     methods: {
         onSidebarEvent: function() {
@@ -1066,7 +1073,10 @@ export default {
         currentPathIsLogin: function() {
             if (this.$route.name === 'login') return true;
             else return false;
-        }
+        },
+        ...mapState({
+            loggedInPerson: state => state.user.loggedInPerson
+        })
     },
     watch: {
         '$route'(to, from) {
@@ -1075,6 +1085,11 @@ export default {
                 this.navBarActive = false;
             }
         }
+        /* loggedInPerson: function(val) {
+            if (!val) {
+                this.$router.push({name: 'login'});
+            }
+        }*/
     }
 };
 </script>
