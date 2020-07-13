@@ -1,116 +1,116 @@
 <template>
-    <div id="page-framework">
+    <div id="framework">
         <RightAside v-if="showRightAside" />
         <!-- begin framework -->
-        <div class="">
-            <FrameworkEditorToolbar
-                @showExportModal="onOpenExportModal"
-                @changeProperties="changeProperties" />
-            <div class="framework-wrapper">
-                <Component
-                    :is="dynamicThingComponent"
-                    :id="'scroll-' + framework.shortId().split('/').pop()"
-                    :obj="changedObj ? changedObj : framework"
-                    :repo="repo"
-                    :parentNotEditable="queryParams.view==='true'"
-                    :profile="frameworkProfile"
-                    @deleteObject="deleteObject"
-                    @removeObject="removeObject"
-                    @editNodeEvent="onEditNode()"
-                    @doneEditingNodeEvent="onDoneEditingNode()"
-                    :properties="properties">
-                    <div class="lode__framework__info-bar">
-                        <span
-                            class="tag is-medium-grey has-text-dark"
-                            v-if="framework.competency && framework.competency.length == 1">
-                            {{ framework.competency.length }} item
-                        </span>
-                        <span
-                            class="tag is-medium-grey has-text-dark"
-                            v-else-if="framework.competency && framework.competency.length > 1">
-                            {{ framework.competency.length }} items
-                        </span>
-                        <span
-                            class="tag is-medium-grey has-text-dark"
-                            v-if="timestamp"
-                            :title="new Date(timestamp)">
-                            Last modified {{ lastModified }}
-                        </span>
-                        <span
-                            class="tag is-medium-grey has-text-dark"
-                            v-if="framework['schema:dateCreated']"
-                            :title="new Date(framework['schema:dateCreated'])">
-                            Created {{ $moment(framework['schema:dateCreated']).fromNow() }}
-                        </span>
-                        <span
-                            class="tag is-medium-grey has-text-dark"
-                            v-if="framework['Approved']"
-                            :title="framework['Approved']">
-                            Approved
-                        </span>
-                        <span
-                            class="tag is-medium-grey has-text-dark"
-                            v-if="framework['Published']"
-                            :title="framework['Published']">Published</span>
-                        <span v-if="loggedIn">
-                            Make private
-                            <input
-                                type="checkbox"
-                                v-model="privateFramework">
-                        </span>
+        <div class="framework-content">
+            <div class="framework-body columns is-multiline is-gapless is-paddingless is-marginless">
+                <FrameworkEditorToolbar
+                    @showExportModal="onOpenExportModal"
+                    @changeProperties="changeProperties"
+                    :selectedArray="selectedArray" />
+                <div class="column is-12">
+                    <div class="container">
+                        <Component
+                            :is="dynamicThingComponent"
+                            :id="'scroll-' + framework.shortId().split('/').pop()"
+                            :obj="framework"
+                            :repo="repo"
+                            :newFramework="newFramework"
+                            :parentNotEditable="queryParams.view==='true'"
+                            :profile="frameworkProfile"
+                            @deleteObject="deleteObject"
+                            @removeObject="removeObject"
+                            @editNodeEvent="onEditNode()"
+                            @doneEditingNodeEvent="onDoneEditingNode()"
+                            :properties="properties">
+                            <div class="lode__framework__info-bar">
+                                <span
+                                    class="tag is-medium-grey has-text-dark"
+                                    v-if="framework.competency && framework.competency.length == 1">
+                                    {{ framework.competency.length }} item
+                                </span>
+                                <span
+                                    class="tag is-medium-grey has-text-dark"
+                                    v-else-if="framework.competency && framework.competency.length > 1">
+                                    {{ framework.competency.length }} items
+                                </span>
+                                <span
+                                    class="tag is-medium-grey has-text-dark"
+                                    v-if="timestamp"
+                                    :title="new Date(timestamp)">
+                                    Last modified {{ lastModified }}
+                                </span>
+                                <span
+                                    class="tag is-medium-grey has-text-dark"
+                                    v-if="framework['schema:dateCreated']"
+                                    :title="new Date(framework['schema:dateCreated'])">
+                                    Created {{ $moment(framework['schema:dateCreated']).fromNow() }}
+                                </span>
+                                <span
+                                    class="tag is-medium-grey has-text-dark"
+                                    v-if="framework['Approved']"
+                                    :title="framework['Approved']">
+                                    Approved
+                                </span>
+                                <span
+                                    class="tag is-medium-grey has-text-dark"
+                                    v-if="framework['Published']"
+                                    :title="framework['Published']">Published</span>
+                            </div>
+                        </Component>
                     </div>
-                </Component>
-                <Hierarchy
-                    :container="framework"
-                    containerType="Framework"
-                    containerTypeGet="EcFramework"
-                    containerNodeProperty="competency"
-                    containerEdgeProperty="relation"
-                    nodeType="EcCompetency"
-                    edgeType="EcAlignment"
-                    edgeRelationProperty="relationType"
-                    edgeRelationLiteral="narrows"
-                    edgeSourceProperty="source"
-                    edgeTargetProperty="target"
-                    :viewOnly="queryParams.view === 'true'"
-                    :repo="repo"
-                    :queryParams="queryParams"
-                    :exportOptions="competencyExportOptions"
-                    :highlightList="highlightCompetency"
-                    :profile="competencyProfile"
-                    @deleteObject="deleteObject"
-                    @editMultipleEvent="onEditMultiple"
-                    @removeObject="removeObject"
-                    @exportObject="exportObject"
-                    @searchThings="handleSearch($event)"
-                    @selectButtonClick="onSelectButtonClick"
-                    :properties="properties"
-                    @selectedArray="selectedArrayEvent" />
+                </div>
+                <div class="column is-12">
+                    <div class="container">
+                        <Hierarchy
+                            :container="framework"
+                            containerType="Framework"
+                            containerTypeGet="EcFramework"
+                            containerNodeProperty="competency"
+                            containerEdgeProperty="relation"
+                            nodeType="EcCompetency"
+                            edgeType="EcAlignment"
+                            edgeRelationProperty="relationType"
+                            edgeRelationLiteral="narrows"
+                            edgeSourceProperty="source"
+                            edgeTargetProperty="target"
+                            :viewOnly="queryParams.view === 'true'"
+                            :repo="repo"
+                            :exportOptions="competencyExportOptions"
+                            :highlightList="highlightCompetency"
+                            :profile="competencyProfile"
+                            :newFramework="newFramework"
+                            @deleteObject="deleteObject"
+                            @editMultipleEvent="onEditMultiple"
+                            @removeObject="removeObject"
+                            @exportObject="exportObject"
+                            @searchThings="handleSearch($event)"
+                            @selectButtonClick="onSelectButtonClick"
+                            :properties="properties"
+                            @selectedArray="selectedArrayEvent"
+                            @doneLoadingNodes="preloadRelations" />
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </template>
 <script>
-import Thing from '@/lode/components/lode/Thing.vue';
-import ThingEditing from '@/lode/components/lode/ThingEditing.vue';
-import Hierarchy from '@/lode/components/lode/Hierarchy.vue';
 import common from '@/mixins/common.js';
+import getLevelsAndRelations from '@/mixins/getLevelsAndRelations.js';
 import exports from '@/mixins/exports.js';
 import competencyEdits from '@/mixins/competencyEdits.js';
 import ctdlasnProfile from '@/mixins/ctdlasnProfile.js';
 import t3Profile from '@/mixins/t3Profile.js';
 import tlaProfile from '@/mixins/tlaProfile.js';
-
-import FrameworkEditorToolbar from '@/components/framework/EditorToolbar.vue';
-import RightAside from '@/components/framework/RightAside.vue';
+import saveAs from 'file-saver';
 
 export default {
     name: "Framework",
     props: {
-        queryParams: Object,
         profileOverride: Object
     },
-    mixins: [common, exports, competencyEdits, ctdlasnProfile, t3Profile, tlaProfile],
+    mixins: [common, exports, competencyEdits, ctdlasnProfile, t3Profile, tlaProfile, getLevelsAndRelations],
     data: function() {
         return {
             showVersionHistory: false,
@@ -145,17 +145,22 @@ export default {
             editingFramework: false,
             properties: "primary",
             config: null,
-            privateFramework: false,
             selectedArray: [],
-            changedObj: null
+            configSetOnFramework: false
         };
     },
     computed: {
+        newFramework: function() {
+            return this.$store.getters['editor/newFramework'] === this.framework.shortId();
+        },
+        queryParams: function() {
+            return this.$store.getters['editor/queryParams'];
+        },
         showRightAside: function() {
             return this.$store.getters['app/showRightAside'];
         },
         dynamicThingComponent: function() {
-            if (this.editingFramework) {
+            if (this.editingFramework || (this.$store.getters['editor/newFramework'] === this.framework.shortId())) {
                 return 'ThingEditing';
             } else {
                 return 'Thing';
@@ -201,14 +206,14 @@ export default {
             if (this.$store.state.editor.t3Profile === true) {
                 return this.t3FrameworkProfile;
             }
-            if (this.config) {
-                return this.config.frameworkConfig;
-            }
-            if (this.queryParams.ceasnDataFields === "true") {
+            if (this.queryParams.ceasnDataFields === "true" && ((this.config && !this.configSetOnFramework) || !this.config)) {
                 return this.ctdlAsnFrameworkProfile;
             }
-            if (this.queryParams.tlaProfile === "true") {
+            if (this.queryParams.tlaProfile === "true" && ((this.config && !this.configSetOnFramework) || !this.config)) {
                 return this.tlaFrameworkProfile;
+            }
+            if (this.config) {
+                return this.config.frameworkConfig;
             }
             return {
                 "@id": {
@@ -248,21 +253,41 @@ export default {
                     "heading": "General",
                     "onePerLanguage": "true"
                 },
-                "headings": ["Keys", "General"]
+                "headings": ["Keys", "General"],
+                "primaryProperties": [
+                    "@id",
+                    "http://schema.org/name",
+                    "http://schema.org/description"
+                ],
+                "secondaryProperties": [],
+                "tertiaryProperties": []
             };
         },
         competencyProfile: function() {
             if (this.$store.state.editor.t3Profile === true) {
                 return this.t3CompetencyProfile;
             }
+            if (this.queryParams.ceasnDataFields === "true" && ((this.config && !this.configSetOnFramework) || !this.config)) {
+                return this.ctdlAsnCompetencyProfile;
+            }
+            if (this.queryParams.tlaProfile === "true" && ((this.config && !this.configSetOnFramework) || !this.config)) {
+                return this.tlaCompetencyProfile;
+            }
             if (this.config) {
-                var profile = this.config.competencyConfig;
+                var profile = JSON.parse(JSON.stringify(this.config.competencyConfig));
+                var compKeys = EcObject.keys(profile);
+                for (var i = 0; i < compKeys.length; i++) {
+                    let key = compKeys[i];
+                    if (profile[key] && profile[key]["http://schema.org/rangeIncludes"] && profile[key]["http://schema.org/rangeIncludes"][0]["@id"] === "https://schema.cassproject.org/0.4/skos/Concept") {
+                        profile[key]["noTextEditing"] = 'true';
+                    }
+                }
                 if (this.config.levelsConfig) {
                     var me = this;
                     var key = EcObject.keys(this.config.levelsConfig);
                     key = key[0];
                     profile.secondaryProperties.push(key);
-                    profile[key] = this.config.levelsConfig[key];
+                    profile[key] = JSON.parse(JSON.stringify(this.config.levelsConfig[key]));
                     profile[key]["http://schema.org/rangeIncludes"] = [{"@id": "https://schema.cassproject.org/0.4/Level"}];
                     profile[key]["valuesIndexed"] = function() { return me.levels; };
                     if (!profile[key]["options"]) {
@@ -277,26 +302,39 @@ export default {
                 }
                 if (this.config.relationshipConfig) {
                     var keys = EcObject.keys(this.config.relationshipConfig);
+                    var relationshipsPriority;
+                    var relationshipsHeading = null;
+                    if (profile["relationshipsPriority"] && profile["relationshipsPriority"].length > 0) {
+                        relationshipsPriority = profile["relationshipsPriority"] + "Properties";
+                    } else {
+                        relationshipsPriority = "secondaryProperties";
+                    }
+                    if (profile["relationshipsHeading"] && profile["relationshipsHeading"].length > 0) {
+                        if (profile["headings"] && !EcArray.has(profile["headings"], profile["relationshipsHeading"])) {
+                            profile["headings"].push(profile["relationshipsHeading"]);
+                        }
+                        relationshipsHeading = profile["relationshipsHeading"];
+                    }
                     for (var i = 0; i < keys.length; i++) {
                         let key = keys[i];
                         var me = this;
-                        profile.secondaryProperties.push(key);
-                        profile[key] = this.config.relationshipConfig[key];
+                        profile[relationshipsPriority].push(key);
+                        profile[key] = JSON.parse(JSON.stringify(this.config.relationshipConfig[key]));
                         profile[key]["http://schema.org/rangeIncludes"] = [{"@id": "https://schema.cassproject.org/0.4/Competency"}];
                         profile[key]["valuesIndexed"] = function() { return me.relations[key]; };
                         profile[key]["noTextEditing"] = 'true';
                         profile[key]["remove"] = function(source, target) { me.removeRelationFromFramework(source, key, target); };
                         profile[key]["add"] = function(selectedCompetency, values) { me.addRelationsToFramework(selectedCompetency, key, values); };
+                        profile[key]["save"] = function() {};
+                        if (relationshipsHeading) {
+                            profile[key]["heading"] = relationshipsHeading;
+                        }
                     }
                 }
                 return profile;
             }
             if (this.profileOverride) {
                 return this.profileOverride;
-            } else if (this.queryParams.ceasnDataFields === "true") {
-                return this.ctdlAsnCompetencyProfile;
-            } else if (this.queryParams.tlaProfile === "true") {
-                return this.tlaCompetencyProfile;
             } else {
                 var me = this;
                 return {
@@ -375,6 +413,7 @@ export default {
                         "valuesIndexed": function() { return me.relations["narrows"]; },
                         "noTextEditing": "true",
                         "add": function(selectedCompetency, values) { me.addRelationsToFramework(selectedCompetency, "narrows", values); },
+                        "save": function() {},
                         "remove": function(source, target) { me.removeRelationFromFramework(source, "narrows", target); },
                         "heading": "Connections"
                     },
@@ -386,6 +425,7 @@ export default {
                         "valuesIndexed": function() { return me.relations["broadens"]; },
                         "noTextEditing": "true",
                         "add": function(selectedCompetency, values) { me.addRelationsToFramework(selectedCompetency, "broadens", values); },
+                        "save": function() {},
                         "remove": function(source, target) { me.removeRelationFromFramework(source, "broadens", target); },
                         "heading": "Connections"
                     },
@@ -397,6 +437,7 @@ export default {
                         "valuesIndexed": function() { return me.relations["isEquivalentTo"]; },
                         "noTextEditing": "true",
                         "add": function(selectedCompetency, values) { me.addRelationsToFramework(selectedCompetency, "isEquivalentTo", values); },
+                        "save": function() {},
                         "remove": function(source, target) { me.removeRelationFromFramework(source, "isEquivalentTo", target); },
                         "heading": "Connections"
                     },
@@ -408,6 +449,7 @@ export default {
                         "valuesIndexed": function() { return me.relations["requires"]; },
                         "noTextEditing": "true",
                         "add": function(selectedCompetency, values) { me.addRelationsToFramework(selectedCompetency, "requires", values); },
+                        "save": function() {},
                         "remove": function(source, target) { me.removeRelationFromFramework(source, "requires", target); },
                         "heading": "Connections"
                     },
@@ -419,6 +461,7 @@ export default {
                         "valuesIndexed": function() { return me.relations["isEnabledBy"]; },
                         "noTextEditing": "true",
                         "add": function(selectedCompetency, values) { me.addRelationsToFramework(selectedCompetency, "isEnabledBy", values); },
+                        "save": function() {},
                         "remove": function(source, target) { me.removeRelationFromFramework(source, "isEnabledBy", target); },
                         "heading": "Connections"
                     },
@@ -430,6 +473,7 @@ export default {
                         "valuesIndexed": function() { return me.relations["isRelatedTo"]; },
                         "noTextEditing": "true",
                         "add": function(selectedCompetency, values) { me.addRelationsToFramework(selectedCompetency, "isRelatedTo", values); },
+                        "save": function() {},
                         "remove": function(source, target) { me.removeRelationFromFramework(source, "isRelatedTo", target); },
                         "heading": "Connections"
                     },
@@ -441,20 +485,42 @@ export default {
                         "valuesIndexed": function() { return me.relations["desires"]; },
                         "noTextEditing": "true",
                         "add": function(selectedCompetency, values) { me.addRelationsToFramework(selectedCompetency, "desires", values); },
+                        "save": function() {},
                         "remove": function(source, target) { me.removeRelationFromFramework(source, "desires", target); },
                         "heading": "Connections"
                     },
-                    "headings": ["Keys", "General", "Connections"]
+                    "headings": ["Keys", "General", "Connections"],
+                    "primaryProperties": [
+                        "@id",
+                        "http://schema.org/name",
+                        "http://schema.org/description"
+                    ],
+                    "secondaryProperties": [
+                        "https://schema.cassproject.org/0.4/scope",
+                        "https://schema.cassproject.org/0.4/Level"
+                    ],
+                    "tertiaryProperties": [
+                        "narrows",
+                        "broadens",
+                        "isEquivalentTo",
+                        "requires",
+                        "isEnabledBy",
+                        "isRelatedTo",
+                        "desires"
+                    ]
                 };
             }
+        },
+        defaultFrameworkConfiguration: function() {
+            return this.$store.getters['editor/framework'].configuration;
         }
     },
     components: {
-        Hierarchy,
-        Thing,
-        ThingEditing,
-        FrameworkEditorToolbar,
-        RightAside
+        Hierarchy: () => import('@/lode/components/lode/Hierarchy.vue'),
+        Thing: () => import('@/lode/components/lode/Thing.vue'),
+        ThingEditing: () => import('@/lode/components/lode/ThingEditing.vue'),
+        FrameworkEditorToolbar: () => import('@/components/framework/EditorToolbar.vue'),
+        RightAside: () => import('@/components/framework/RightAside.vue')
     },
     created: function() {
         // Set configuration create() happens before mount, make sure framework exists in case
@@ -469,134 +535,41 @@ export default {
         if (!this.framework) {
             this.$router.push({name: "frameworks"});
         } else {
-            this.checkIsPrivate();
+            this.updateLevels();
+            this.updateRelations();
         }
     },
     watch: {
         shortId: function() {
             this.refreshPage();
         },
-        privateFramework: function() {
-            var me = this;
-            var framework = this.framework;
-            if (this.privateFramework === true) {
-                this.$store.commit('editor/private', true);
-                if (framework.competency && framework.competency.length > 0) {
-                    new EcAsyncHelper().each(framework.competency, function(competencyId, done) {
-                        EcCompetency.get(competencyId, function(c) {
-                            if (c.canEditAny(EcIdentityManager.getMyPks())) {
-                                c.addOwner(EcIdentityManager.ids[0].ppk.toPk());
-                                c["schema:dateModified"] = new Date().toISOString();
-                                c = EcEncryptedValue.toEncryptedValue(c);
-                                me.repo.saveTo(c, done, done);
-                            } else {
-                                done();
-                            }
-                        }, done);
-                    }, function(competencyIds) {
-                        if (framework.relation && framework.relation.length > 0) {
-                            new EcAsyncHelper().each(framework.relation, function(relationId, done) {
-                                EcAlignment.get(relationId, function(r) {
-                                    r.addOwner(EcIdentityManager.ids[0].ppk.toPk());
-                                    r = EcEncryptedValue.toEncryptedValue(r);
-                                    me.repo.saveTo(r, done, done);
-                                }, done);
-                            }, function(relationIds) {
-                                me.encryptFramework(framework);
-                            });
-                        } else {
-                            me.encryptFramework(framework);
-                        }
-                    });
-                } else {
-                    me.encryptFramework(framework);
-                }
-            } else {
-                this.$store.commit('editor/private', false);
-                framework = EcEncryptedValue.toEncryptedValue(framework);
-                var f = new EcFramework();
-                f.copyFrom(framework.decryptIntoObject());
-                f["schema:dateModified"] = new Date().toISOString();
-                delete f.reader;
-                EcEncryptedValue.encryptOnSave(f.id, false);
-                me.repo.saveTo(f, function() {}, console.error);
-                framework = f;
-                if (framework.competency && framework.competency.length > 0) {
-                    new EcAsyncHelper().each(framework.competency, function(competencyId, done) {
-                        EcRepository.get(competencyId, function(c) {
-                            var v;
-                            if (c.canEditAny(EcIdentityManager.getMyPks())) {
-                                if (c.isAny(new EcEncryptedValue().getTypes())) {
-                                    v = new EcEncryptedValue();
-                                    v.copyFrom(c);
-                                } else {
-                                    v = EcEncryptedValue.toEncryptedValue(c);
-                                }
-                                c = new EcCompetency();
-                                c.copyFrom(v.decryptIntoObject());
-                                c["schema:dateModified"] = new Date().toISOString();
-                                delete c.reader;
-                                EcEncryptedValue.encryptOnSave(c.id, false);
-                                me.repo.saveTo(c, done, done);
-                            } else {
-                                done();
-                            }
-                        }, done);
-                    }, function(competencyIds) {
-                        if (framework.relation && framework.relation.length > 0) {
-                            new EcAsyncHelper().each(framework.relation, function(relationId, done) {
-                                EcRepository.get(relationId, function(r) {
-                                    var v;
-                                    if (r.isAny(new EcEncryptedValue().getTypes())) {
-                                        v = new EcEncryptedValue();
-                                        v.copyFrom(r);
-                                    } else {
-                                        v = EcEncryptedValue.toEncryptedValue(r);
-                                    }
-                                    r = new EcAlignment();
-                                    r.copyFrom(v.decryptIntoObject());
-                                    delete r.reader;
-                                    EcEncryptedValue.encryptOnSave(r.id, false);
-                                    me.repo.saveTo(r, done, done);
-                                }, done);
-                            }, function(relationIds) {
-                            });
-                        }
-                    });
-                }
-            }
-        },
         config: function() {
             this.$store.commit('editor/configuration', this.config);
         },
         commentScrollTo: function() {
             this.$scrollTo(this.commentScrollTo.scrollId);
+        },
+        defaultFrameworkConfiguration: function() {
+            this.getConfiguration();
         }
     },
     methods: {
         handleSearch: function(e) {
             this.$store.commit('app/showModal', e);
         },
-        checkIsPrivate: function() {
-            if (EcRepository.getBlocking(this.framework.id)) {
-                if (EcRepository.getBlocking(this.framework.id).type === "EncryptedValue") {
-                    this.privateFramework = true;
-                } else {
-                    this.privateFramework = false;
-                }
-            }
-        },
         getConfiguration: function() {
             var me = this;
             if (this.framework.configuration) {
                 var c = EcRepository.getBlocking(this.framework.configuration);
-                console.log("c is: ", c);
+                appLog("c is: ", c);
                 if (c) {
-                    console.log("c is: ", c);
+                    appLog("c is: ", c);
                     this.config = c;
+                    this.configSetOnFramework = true;
                 }
-                console.log("c is: ", c);
-            } else if (localStorage.getItem("cassAuthoringToolDefaultBrowserConfigId")) {
+                appLog("c is: ", c);
+            }
+            if (!this.config && localStorage.getItem("cassAuthoringToolDefaultBrowserConfigId")) {
                 // If no framework configuration, use browser default
                 var c = EcRepository.getBlocking(localStorage.getItem("cassAuthoringToolDefaultBrowserConfigId"));
                 if (c) {
@@ -627,7 +600,8 @@ export default {
             this.editingFramework = true;
         },
         onDoneEditingNode: function() {
-            this.changedObj = EcRepository.getBlocking(this.framework.shortId());
+            this.$store.commit('editor/framework', EcRepository.getBlocking(this.framework.shortId()));
+            this.$store.commit('editor/newFramework', null);
             this.editingFramework = false;
         },
         onOpenComments: function() {
@@ -641,7 +615,7 @@ export default {
         },
         refreshPage: function() {
             if (!this.framework) {
-                console.log("no framework to refresh");
+                appLog("no framework to refresh");
                 return;
             }
             if (EcRepository.shouldTryUrl(this.framework.id) === false) {
@@ -704,19 +678,11 @@ export default {
             } else if (exportType === "csv") {
                 this.exportCsv();
             } else if (exportType === "case") {
-                this.exportCasePackages(guid);
+                this.exportCasePackages(this.frameworkExportGuid);
             }
         },
         changeProperties: function(type) {
             this.properties = type;
-        },
-        encryptFramework: function(framework) {
-            var f = new EcFramework();
-            f.copyFrom(framework);
-            f.addOwner(EcIdentityManager.ids[0].ppk.toPk());
-            f["schema:dateModified"] = new Date().toISOString();
-            f = EcEncryptedValue.toEncryptedValue(f);
-            this.repo.saveTo(f, function() {}, console.error);
         },
         onSelectButtonClick: function(ids) {
             this.selectButton(ids);
@@ -724,7 +690,7 @@ export default {
         onOpenExportModal() {
             let params = {};
             var me = this;
-            console.log("options", typeof me.frameworkExportOptions);
+            appLog("options", typeof me.frameworkExportOptions);
             params = {
                 type: "export",
                 selectedExportOption: '',
@@ -737,6 +703,11 @@ export default {
             };
             // reveal modal
             this.$modal.show(params);
+        },
+        // Speed up load of secondary properties
+        preloadRelations: function() {
+            var relation = this.relations;
+            var level = this.levels;
         }
     }
 };

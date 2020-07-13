@@ -1,7 +1,7 @@
 <template>
-    <div class="page-open">
+    <div class="organizations">
         <div>
-            <span v-if="queryParams.concepts==='true'">
+            <span v-if="$store.getters['editor/conceptMode']">
                 <input
                     type="radio"
                     value="dcterms:title.keyword"
@@ -58,9 +58,6 @@ import List from '@/lode/components/lode/List.vue';
 import common from '@/mixins/common.js';
 export default {
     name: "Organizations",
-    props: {
-        queryParams: Object
-    },
     mixins: [common],
     data: function() {
         return {
@@ -69,6 +66,9 @@ export default {
         };
     },
     computed: {
+        queryParams: function() {
+            return this.$store.getters['editor/queryParams'];
+        },
         searchOptions: function() {
             let search = "";
             if (this.queryParams && this.queryParams.filter != null) {
@@ -81,8 +81,8 @@ export default {
                         search += " OR ";
                     }
                     var id = EcIdentityManager.ids[i];
-                    search += "@owner:\"" + id.ppk.toPk().toPem() + "\"";
-                    search += " OR @owner:\"" + addNewlinesToId(id.ppk.toPk().toPem()) + "\"";
+                    search += "\\*owner:\"" + id.ppk.toPk().toPem() + "\"";
+                    search += " OR \\*owner:\"" + addNewlinesToId(id.ppk.toPk().toPem()) + "\"";
                 }
                 search += ")";
             }
@@ -106,7 +106,7 @@ export default {
             EcOrganization.get(organization.id, function(success) {
                 me.$store.commit('editor/organization', success);
                 me.$router.push({name: "organization", params: {organizationId: organization.id}});
-            }, console.error);
+            }, appError);
         },
         getName: function(field) {
             let name = EcArray.isArray(field) ? field : [field];

@@ -1,5 +1,5 @@
 <template>
-    <div class="modal-card">
+    <div class="modal-card comment-modal">
         <header class="modal-card-head has-background-primary">
             <p class="modal-card-title">
                 <span class="title has-text-white">
@@ -12,27 +12,26 @@
                 @click="closeModal"
                 aria-label="close" />
         </header>
-        <section class="modal-card-body">
+        <section class="modal-card-body comment-modal__details">
             <h3 class="is-size-4">
-                <span v-if="isCommentNew">Commenting on</span>
-                <span v-if="isCommentReply">Replying to comments about</span>
-                <span v-if="isCommentEdit">Editing comment on</span>
+                <span
+                    v-if="isCommentNew"
+                    class="comment-modal__details__header">Commenting on</span>
+                <span
+                    v-if="isCommentReply"
+                    class="comment-modal__details__header">Replying to comments about</span>
+                <span
+                    v-if="isCommentEdit"
+                    class="comment-modal__details__header">Editing comment on</span>
             </h3>
-            <p class="subtitle commentAbout">
-                <b>{{ commentFrameworkName }}</b>
-                <span v-if="isCommentOnCompetency">
-                    <br>
-                    <span class="commentAbout">{{ commentSubject.getName() }}</span>
-                </span>
+            <p class="comment-modal__details__framework">
+                <b>framework: </b>{{ commentFrameworkName }}
             </p>
-            <!--
-            I don't think this is needed.  The replies are single threaded so you are technically always replying to the top comment
-            <div
-                v-if="isCommentReply"
-                class="is-size-5 commentReply">
-                "{{ commentToReply.text }}"
-            </div>
-            -->
+            <p
+                class="comment-modal__details__competency"
+                v-if="isCommentOnCompetency">
+                <b>competency:</b> {{ commentSubject.getName() }}
+            </p>
             <div class="field">
                 <div class="control">
                     <textarea
@@ -45,7 +44,7 @@
                 v-if="commentIsBusy"
                 class="has-text-centered">
                 <span class="icon is-large has-text-center has-text-link">
-                    <i class="fas fa-3x fa-spinner is-info fa-pulse" />
+                    <i class="fas fa-2x fa-spinner is-info fa-pulse" />
                 </span>
             </div>
         </section>
@@ -142,26 +141,26 @@ export default {
             }
         },
         saveCommentSuccess: function() {
-            console.log("Save comment succeeded");
+            appLog("Save comment succeeded");
             this.updateStoredFrameworkCommentData();
             this.commentIsBusy = false;
             this.closeModal();
         },
         saveCommentFailed: function(msg) {
             this.commentIsBusy = false;
-            console.log("Save comment failed: " + msg);
+            appLog("Save comment failed: " + msg);
         },
         saveComment: function() {
             if (this.commentText.trim().length > 0) {
                 if (!this.loggedInPerson || !this.loggedInPerson.id) alert('Not logged in. How did you get here?');
                 else {
                     this.loggedInPersonEcPk = this.getPersonEcPk(this.loggedInPerson);
-                    if (!this.loggedInPersonEcPk) console.log("Could not determine person EcPk for comment");
+                    if (!this.loggedInPersonEcPk) appLog("Could not determine person EcPk for comment");
                     else {
                         this.commentIsBusy = true;
                         this.commentToSave = this.buildCommentObject();
-                        console.log("commentToSave");
-                        console.log(this.commentToSave);
+                        appLog("commentToSave");
+                        appLog(this.commentToSave);
                         EcRepository.save(this.commentToSave, this.saveCommentSuccess, this.saveCommentFailed);
                     }
                 }
@@ -234,8 +233,19 @@ export default {
 <style lang="scss">
     @import './../../scss/variables.scss';
 
-    .commentAbout {
-        margin-left: 1rem;
+    .comment-modal__details {
+        margin-left: 0rem;
+        .comment-modal__details__header {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        .comment-modal__details__framework {
+            font-size: 1rem;
+        }
+        .comment-modal__details__competency {
+            font-size: 1rem;
+            padding-bottom: .5rem;
+        }
     }
     .commentReply {
         margin-top: 1rem;

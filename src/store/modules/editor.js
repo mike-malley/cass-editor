@@ -8,12 +8,14 @@ const state = {
     framework: null,
     organization: null,
     selectedCompetency: null,
+    queryParams: {},
     defaultLanguage: null,
     webSocketBackoff: 100,
     selectCompetencyRelation: null,
     selectingCompetencies: false,
     private: false,
     newCompetency: null,
+    newFramework: null,
     t3Profile: false,
     changedObject: null,
     configuration: null,
@@ -28,7 +30,18 @@ const state = {
     frameworkCommentList: [],
     frameworkCommentPersonMap: {},
     commentsToDelete: [],
-    commentScrollTo: {}
+    commentScrollTo: {},
+    editsToUndo: [],
+    lastEditToUndo: null,
+    recomputeHierarchy: false,
+    selectedCompetenciesAsProperties: null,
+    refreshLevels: false,
+    conceptMode: false,
+    cutId: null,
+    copyId: null,
+    paste: false,
+    cutOrCopyContainerId: null,
+    nodeInFocus: null
 };
 const mutations = {
     framework(state, f) {
@@ -39,6 +52,9 @@ const mutations = {
     },
     selectedCompetency(state, comp) {
         state.selectedCompetency = comp;
+    },
+    queryParams(state, params) {
+        state.queryParams = params;
     },
     defaultLanguage(state, lang) {
         state.defaultLanguage = lang;
@@ -57,6 +73,9 @@ const mutations = {
     },
     newCompetency(state, id) {
         state.newCompetency = id;
+    },
+    newFramework(state, id) {
+        state.newFramework = id;
     },
     t3Profile(state, bool) {
         state.t3Profile = bool;
@@ -107,10 +126,46 @@ const mutations = {
     },
     setCommentScrollTo(state, val) {
         state.commentScrollTo = val;
+    },
+    addEditsToUndo(state, edits) {
+        state.editsToUndo.push(edits);
+    },
+    setLastEditToUndo(state, edit) {
+        state.lastEditToUndo = edit;
+    },
+    recomputeHierarchy(state, boolean) {
+        state.recomputeHierarchy = boolean;
+    },
+    selectedCompetenciesAsProperties(state, comps) {
+        state.selectedCompetenciesAsProperties = comps;
+    },
+    refreshLevels(state, boolean) {
+        state.refreshLevels = boolean;
+    },
+    conceptMode(state, boolean) {
+        state.conceptMode = boolean;
+    },
+    cutId(state, id) {
+        state.cutId = id;
+    },
+    copyId(state, id) {
+        state.copyId = id;
+    },
+    paste(state, id) {
+        state.paste = id;
+    },
+    cutOrCopyContainerId(state, id) {
+        state.cutOrCopyContainerId = id;
+    },
+    nodeInFocus(state, id) {
+        state.nodeInFocus = id;
     }
 };
 const actions = {
-
+    lastEditToUndo: function(context) {
+        context.commit('setLastEditToUndo', context.state.editsToUndo.pop());
+        return context.state.lastEditToUndo;
+    }
 };
 const getters = {
     framework: function(state) {
@@ -121,6 +176,9 @@ const getters = {
     },
     selectedCompetency: function(state) {
         return state.selectedCompetency;
+    },
+    queryParams: function(state) {
+        return state.queryParams;
     },
     defaultLanguage: function(state) {
         return state.defaultLanguage;
@@ -139,6 +197,9 @@ const getters = {
     },
     newCompetency: function(state) {
         return state.newCompetency;
+    },
+    newFramework: function(state) {
+        return state.newFramework;
     },
     t3Profile: function(state) {
         return state.t3Profile;
@@ -175,6 +236,33 @@ const getters = {
     },
     commentScrollTo: function(state) {
         return state.commentScrollTo;
+    },
+    recomputeHierarchy: function(state) {
+        return state.recomputeHierarchy;
+    },
+    selectedCompetenciesAsProperties: function(state) {
+        return state.selectedCompetenciesAsProperties;
+    },
+    refreshLevels: function(state) {
+        return state.refreshLevels;
+    },
+    conceptMode: function(state) {
+        return state.conceptMode;
+    },
+    cutId: function(state) {
+        return state.cutId;
+    },
+    copyId: function(state) {
+        return state.copyId;
+    },
+    paste: function(state) {
+        return state.paste;
+    },
+    cutOrCopyContainerId: function(state) {
+        return state.cutOrCopyContainerId;
+    },
+    nodeInFocus: function(state) {
+        return state.nodeInFocus;
     }
 };
 

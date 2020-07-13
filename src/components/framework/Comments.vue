@@ -7,9 +7,11 @@
     <aside
         id="right-side-bar__comments"
         class="menu has-background-lightest">
-        <p class="subtitle is-size-4">
-            Comments
-        </p>
+        <div class="right-aside-bar__title">
+            <h3 class="title is-size-3">
+                Comments
+            </h3>
+        </div>
         <!-- for each comment in time sequence
             click to scroll to position in framework eventually -->
         <!-- for each response -->
@@ -17,7 +19,7 @@
             v-if="isCommentsBusy"
             class="has-text-centered">
             <span class="icon is-large has-text-center has-text-link">
-                <i class="fas fa-3x fa-spinner is-info fa-pulse" />
+                <i class="fas fa-2x fa-spinner is-info fa-pulse" />
             </span>
         </div>
         <div v-if="!isCommentsBusy">
@@ -28,13 +30,33 @@
                     <p><i class="fa fa-exclamation-circle" /> No comments available</p>
                 </span>
             </div>
-            <div v-if="commentWrapperList.length > 0">
-                <Comment
-                    v-for="commentWrapper in commentWrapperList"
-                    :comment="commentWrapper"
-                    :canReply="canReplyToComments"
-                    :key="commentWrapper" />
-            </div>
+            <template v-if="commentWrapperList.length > 0">
+                <div
+                    v-for="(commentWrapper, index) in commentWrapperList"
+                    :key="index"
+                    class="comment-list">
+                    <h4
+                        class="comment-list__about"
+                        @click="setUpScroll(commentWrapper)">
+                        {{ commentWrapper.aboutName }}
+                    </h4>
+                    <Comment
+                        :comment="commentWrapper"
+                        :key="commentWrapper.commentId"
+                        :canReply="canReplyToComments" />
+                    <div class="buttons is-right">
+                        <div
+                            class="button is-small is-outlined is-primary"
+                            title="reply"
+                            @click="handleClickReply(commentWrapper)">
+                            <span class="icon">
+                                <i class="fa fa-reply" />
+                            </span>
+                            <span>reply</span>
+                        </div>
+                    </div>
+                </div>
+            </template>
         </div>
     </aside>
 </template>
@@ -60,6 +82,16 @@ export default {
         Comment
     },
     methods: {
+        setUpScroll: function(comment) {
+            let scrollObj = {ts: Date.now(), scrollId: '#scroll-' + comment.aboutId.split('/').pop()};
+            this.$store.commit('editor/setCommentScrollTo', scrollObj);
+        },
+        handleClickReply: function(comment) {
+            this.$store.commit('editor/setAddCommentAboutId', comment.aboutId);
+            this.$store.commit('editor/setAddCommentType', 'reply');
+            this.$store.commit('editor/setCommentToReply', comment.comment);
+            this.$store.commit('app/showModal', {component: 'AddComment'});
+        },
         determineCanModifyComment: function(comment) {
             if (this.loggedOnPerson.shortId().equals(comment.creator)) return true;
             else return false;
@@ -117,7 +149,7 @@ export default {
                 let reply = this.commentWrapperMap[replyId];
                 let replyAboutId = reply.aboutId;
                 let parent = this.commentWrapperMap[replyAboutId];
-                parent.replies.push(reply);
+                if (parent) parent.replies.push(reply);
             }
         },
         buildReplyCommentWrappers: function() {
@@ -169,7 +201,7 @@ export default {
             this.$store.commit('editor/setFrameworkCommentList', this.localFrameworkCommentList); // this SHOULD trigger parseComments
         },
         buildFrameworkCommentPersonMapFailure: function(msg) {
-            console.log('buildFrameworkCommentPersonMapFailure: ' + msg);
+            appLog('buildFrameworkCommentPersonMapFailure: ' + msg);
             this.isCommentsBusy = false;
         },
         buildCommentCreatorList: function() {
@@ -180,7 +212,10 @@ export default {
             return commentCreators;
         },
         buildFrameworkCommentPersonMap: function() {
-            window.repo.multiget(this.buildCommentCreatorList(), this.buildFrameworkCommentPersonMapSuccess, this.buildFrameworkCommentPersonMapFailure);
+            let commentCreators = this.buildCommentCreatorList();
+            if (commentCreators.length > 0) {
+                window.repo.multiget(commentCreators, this.buildFrameworkCommentPersonMapSuccess, this.buildFrameworkCommentPersonMapFailure);
+            } else this.buildFrameworkCommentPersonMapSuccess([]);
         },
         sortLocalFrameworkCommentList() {
             this.localFrameworkCommentList.sort(function(c1, c2) {
@@ -195,7 +230,7 @@ export default {
             this.buildFrameworkCommentPersonMap();
         },
         buildFrameworkCommentListFailure: function(msg) {
-            console.log('buildFrameworkCommentListFailure: ' + msg);
+            appLog('buildFrameworkCommentListFailure: ' + msg);
             this.isCommentsBusy = false;
         },
         clearAllFrameworkCommentData: function() {

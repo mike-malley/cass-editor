@@ -1,5 +1,5 @@
 <template>
-    <div class="page-organization">
+    <div class="organization">
         <Thing
             :obj="organization"
             :repo="repo"
@@ -31,8 +31,7 @@ import common from '@/mixins/common.js';
 export default {
     name: "Organization",
     props: {
-        exportType: String,
-        queryParams: Object
+        exportType: String
     },
     mixins: [common],
     data: function() {
